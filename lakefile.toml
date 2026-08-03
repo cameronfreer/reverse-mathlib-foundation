@@ -1,0 +1,29 @@
+name = "reverse-mathlib-foundation"
+version = "0.1.0"
+license = "Apache-2.0"
+defaultTargets = ["RMFoundationBridge"]
+
+# Tranche F1: the isolated omega-semantics bridge. This workspace pins exact revisions of
+# BOTH projects and depends on both; the two core repositories never depend on each other
+# and are never modified from here. Toolchain: Foundation's (v4.32.2); reverse-mathlib
+# (pinned below) is rebuilt inside this workspace against this workspace's mathlib.
+
+# The single mathlib for the whole workspace: the v4.32.2 tag, matching Foundation's pin.
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "905b95818eb32af7874a58b427f50c1711a5e96c"
+
+[[require]]
+name = "Foundation"
+git = "https://github.com/FormalizedFormalLogic/Foundation"
+rev = "9800e78127294798496adc6e37c8b9ded637d93a"
+
+[[require]]
+name = "reverse-mathlib"
+git = "https://github.com/cameronfreer/reverse-mathlib"
+rev = "ff824c13d963fcbfd28d7af85b3cf3f14704d4a4"
+
+[[lean_lib]]
+name = "RMFoundationBridge"
+leanOptions = { autoImplicit = false, warningAsError = true }
