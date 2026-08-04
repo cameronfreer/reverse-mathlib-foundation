@@ -6,3 +6,4 @@ import RMFoundationBridge.HierarchyRew
 import RMFoundationBridge.UnivClose
 import RMFoundationBridge.Rca0Theory
 import RMFoundationBridge.EvalTransport
+import RMFoundationBridge.SchemaExpansion
