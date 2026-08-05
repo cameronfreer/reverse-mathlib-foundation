@@ -23,3 +23,4 @@ import RMFoundationBridge.HenkinCalculus
 import RMFoundationBridge.Turnstile
 import RMFoundationBridge.GraphPredicates
 import RMFoundationBridge.EfilcSentence
+import RMFoundationBridge.HallSentence
