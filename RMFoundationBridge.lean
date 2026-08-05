@@ -17,3 +17,4 @@ import RMFoundationBridge.Delta01Decide
 import RMFoundationBridge.ForwardAdequacy
 import RMFoundationBridge.SeqArith
 import RMFoundationBridge.TreePredicates
+import RMFoundationBridge.WklSentence
