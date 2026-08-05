@@ -14,3 +14,4 @@ import RMFoundationBridge.Delta0Agreement
 import RMFoundationBridge.Delta0Recursive
 import RMFoundationBridge.Sigma01Stage
 import RMFoundationBridge.Delta01Decide
+import RMFoundationBridge.ForwardAdequacy
