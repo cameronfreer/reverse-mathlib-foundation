@@ -100,4 +100,17 @@ theorem IsSigma01.exists_stage {N : ℕ} (A : Fin N → Set ℕ) (𝕊 : Set (Se
           simp only [Nat.unpair_pair, decodeSeq_seqCode, ← ofFn_cons] at hwc
           exact ⟨wc.unpair.1, (hspec (wc.unpair.1 :> e)).mpr ⟨wc.unpair.2, hwc⟩⟩
 
+/-- **The Π⁰₁ costage**, a thin corollary through the negation swap: **misses
+characterize truth** — callers get `¬ EvalN 𝕊 φ A e ↔ ∃ wc, R … = 1` directly, never
+reasoning about `EvalN (∼φ)`. -/
+theorem IsPi01.exists_costage {N : ℕ} (A : Fin N → Set ℕ) (𝕊 : Set (Set ℕ)) {n : ℕ}
+    {φ : SecondOrder.Semiformula ℒₒᵣ Empty Empty N n} (h : IsPi01 φ) :
+    ∃ R : ℕ → ℕ,
+      (Nat.RecursiveIn {charFn (finiteParamOracle A)} fun p => Part.some (R p)) ∧
+      ∀ e : Fin n → ℕ,
+        (¬ EvalN 𝕊 φ A e ↔
+          ∃ wc : ℕ, R (Nat.pair (seqCode (List.ofFn e)) wc) = 1) := by
+  obtain ⟨R, hR, hspec⟩ := IsSigma01.exists_stage A 𝕊 h.neg
+  exact ⟨R, hR, fun e => (evalN_neg.symm.trans (hspec e))⟩
+
 end RMFoundationBridge
