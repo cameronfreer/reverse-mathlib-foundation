@@ -35,6 +35,12 @@ def gates : List (Name × List Name) :=
     [``RMFoundationBridge.soundness,
      ``RMFoundationBridge.forward_adequacy,
      ``RMFoundationBridge.models_wklSentence_iff,
+     ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart]),
+   (``RMFoundationBridge.rca0_not_semantically_implies_efilc,
+    [``RMFoundationBridge.forward_adequacy,
+     ``RMFoundationBridge.models_efilcSentence_iff,
+     ``RMFoundationBridge.models_wklSentence_iff,
+     ``ReverseMathlib.Omega.efilcAt_of_weakKonigAt,
      ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart])]
 
 /-- Transitive constant closure over types and values (fail-open on missing constants
