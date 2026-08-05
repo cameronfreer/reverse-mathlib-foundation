@@ -24,12 +24,18 @@ open Lean
 
 def allowedAxioms : List Name := [``propext, ``Classical.choice, ``Quot.sound]
 
-def headline : Name := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
-
-def requiredDeps : List Name :=
-  [``RMFoundationBridge.forward_adequacy,
-   ``RMFoundationBridge.models_wklSentence_iff,
-   ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart]
+/-- Headlines with their load-bearing dependency gates: each headline must reach every
+listed dependency in its transitive constant closure. -/
+def gates : List (Name × List Name) :=
+  [(``RMFoundationBridge.rca0_not_semantically_implies_wkl,
+    [``RMFoundationBridge.forward_adequacy,
+     ``RMFoundationBridge.models_wklSentence_iff,
+     ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart]),
+   (``RMFoundationBridge.rca0_not_derives_wkl,
+    [``RMFoundationBridge.soundness,
+     ``RMFoundationBridge.forward_adequacy,
+     ``RMFoundationBridge.models_wklSentence_iff,
+     ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart])]
 
 /-- Transitive constant closure over types and values (fail-open on missing constants
 is impossible: every used constant of an elaborated declaration is in the
@@ -56,13 +62,14 @@ partial def closure (env : Environment) : List Name → NameSet → NameSet
           unless allowedAxioms.contains a do
             throwError "axiom audit (sweep): {name} depends on disallowed axiom {a}"
         swept := swept + 1
-  let axs ← collectAxioms headline
-  for a in axs do
-    unless allowedAxioms.contains a do
-      throwError "axiom audit: {headline} depends on disallowed axiom {a}"
-  let reached := closure env [headline] {}
-  for d in requiredDeps do
-    unless reached.contains d do
-      throwError "dependency gate: {headline} does not reach {d}"
-  IO.println s!"bridge audit: swept {swept} declaration(s), axioms clean; headline \
-reaches all {requiredDeps.length} required dependencies"
+  for (headline, requiredDeps) in gates do
+    let axs ← collectAxioms headline
+    for a in axs do
+      unless allowedAxioms.contains a do
+        throwError "axiom audit: {headline} depends on disallowed axiom {a}"
+    let reached := closure env [headline] {}
+    for d in requiredDeps do
+      unless reached.contains d do
+        throwError "dependency gate: {headline} does not reach {d}"
+  IO.println s!"bridge audit: swept {swept} declaration(s), axioms clean; all \
+{gates.length} headline(s) reach their required dependencies"

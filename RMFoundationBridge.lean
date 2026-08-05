@@ -20,3 +20,4 @@ import RMFoundationBridge.TreePredicates
 import RMFoundationBridge.WklSentence
 import RMFoundationBridge.WklRegression
 import RMFoundationBridge.HenkinCalculus
+import RMFoundationBridge.Turnstile
