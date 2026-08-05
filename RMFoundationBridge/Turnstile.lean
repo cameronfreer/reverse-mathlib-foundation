@@ -18,6 +18,16 @@ unconditional statement adapter composed with the Kleene tree refutes the conclu
 semantic `Rca0Theory` axiom set, over the canonical coding — with **no completeness
 claim**: derivability is not asserted to exhaust semantic consequence, and no positive
 derivability facts are claimed at all.
+
+**Proof-system-adequacy debt (recorded, not discharged)**: `Derivable` is a new,
+deliberately conservative calculus, not yet proved equivalent to any pinned standard
+proof system for second-order arithmetic — in particular, since `Struc₂.sets` may be
+empty, closed existential-set introduction is intentionally weaker than many-sorted
+Henkin logic with nonempty sorts. The checked result therefore renders exactly as
+`Rca0Theory ⊬ wklSentence` **in `RMFoundationBridge.Derivable`**, never as an
+unqualified Simpson-style RCA₀ ⊬ WKL. Promotion requires either an embedding of a
+pinned standard calculus into `Derivable`, or soundness proved directly for that pinned
+calculus; no completeness theorem is needed either way.
 -/
 
 namespace RMFoundationBridge
