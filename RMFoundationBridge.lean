@@ -19,3 +19,4 @@ import RMFoundationBridge.SeqArith
 import RMFoundationBridge.TreePredicates
 import RMFoundationBridge.WklSentence
 import RMFoundationBridge.WklRegression
+import RMFoundationBridge.HenkinCalculus
