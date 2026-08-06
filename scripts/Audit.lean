@@ -25,23 +25,54 @@ open Lean
 def allowedAxioms : List Name := [``propext, ``Classical.choice, ``Quot.sound]
 
 /-- Headlines with their load-bearing dependency gates: each headline must reach every
-listed dependency in its transitive constant closure. -/
-def gates : List (Name × List Name) :=
-  [(``RMFoundationBridge.rca0_not_semantically_implies_wkl,
-    [``RMFoundationBridge.forward_adequacy,
-     ``RMFoundationBridge.models_wklSentence_iff,
-     ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart]),
-   (``RMFoundationBridge.rca0_not_derives_wkl,
-    [``RMFoundationBridge.soundness,
-     ``RMFoundationBridge.forward_adequacy,
-     ``RMFoundationBridge.models_wklSentence_iff,
-     ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart]),
-   (``RMFoundationBridge.rca0_not_semantically_implies_efilc,
-    [``RMFoundationBridge.forward_adequacy,
-     ``RMFoundationBridge.models_efilcSentence_iff,
-     ``RMFoundationBridge.models_wklSentence_iff,
-     ``ReverseMathlib.Omega.efilcAt_of_weakKonigAt,
-     ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart])]
+`required` dependency in its transitive constant closure and none of the `forbidden`
+ones. -/
+structure Gate where
+  headline : Name
+  required : List Name
+  forbidden : List Name := []
+
+/-- The derived ŴKL → Hall composition must stay out of every export leaf. -/
+def derivedOnly : List Name :=
+  [``RMFoundationBridge.models_hallSentence_of_models_wklSentence]
+
+def gates : List Gate :=
+  [{ headline := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
+     required := [``RMFoundationBridge.forward_adequacy,
+       ``RMFoundationBridge.models_wklSentence_iff,
+       ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart] },
+   { headline := ``RMFoundationBridge.rca0_not_derives_wkl
+     required := [``RMFoundationBridge.soundness,
+       ``RMFoundationBridge.forward_adequacy,
+       ``RMFoundationBridge.models_wklSentence_iff,
+       ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart] },
+   { headline := ``RMFoundationBridge.rca0_not_semantically_implies_efilc
+     required := [``RMFoundationBridge.forward_adequacy,
+       ``RMFoundationBridge.models_efilcSentence_iff,
+       ``RMFoundationBridge.models_wklSentence_iff,
+       ``ReverseMathlib.Omega.efilcAt_of_weakKonigAt,
+       ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart] },
+   -- The export surface: each record reaches exactly its named theorem, and no export
+   -- leaf reaches the derived composition.
+   { headline := ``RMFoundationBridge.rca0RealizationExport
+     required := [``RMFoundationBridge.forward_adequacy]
+     forbidden := derivedOnly },
+   { headline := ``RMFoundationBridge.wklAdapterExport
+     required := [``RMFoundationBridge.models_wklSentence_iff]
+     forbidden := derivedOnly },
+   { headline := ``RMFoundationBridge.efilcAdapterExport
+     required := [``RMFoundationBridge.models_efilcSentence_iff]
+     forbidden := derivedOnly },
+   { headline := ``RMFoundationBridge.hallAdapterExport
+     required := [``RMFoundationBridge.models_hallSentence_iff]
+     forbidden := derivedOnly },
+   { headline := ``RMFoundationBridge.bridgeCalculusExport
+     required := [``RMFoundationBridge.soundness]
+     forbidden := derivedOnly },
+   { headline := ``RMFoundationBridge.wklNonderivabilityExport
+     required := [``RMFoundationBridge.rca0_not_derives_wkl,
+       ``RMFoundationBridge.soundness]
+     forbidden := derivedOnly }]
 
 /-- Transitive constant closure over types and values (fail-open on missing constants
 is impossible: every used constant of an elaborated declaration is in the
@@ -68,14 +99,17 @@ partial def closure (env : Environment) : List Name → NameSet → NameSet
           unless allowedAxioms.contains a do
             throwError "axiom audit (sweep): {name} depends on disallowed axiom {a}"
         swept := swept + 1
-  for (headline, requiredDeps) in gates do
-    let axs ← collectAxioms headline
+  for g in gates do
+    let axs ← collectAxioms g.headline
     for a in axs do
       unless allowedAxioms.contains a do
-        throwError "axiom audit: {headline} depends on disallowed axiom {a}"
-    let reached := closure env [headline] {}
-    for d in requiredDeps do
+        throwError "axiom audit: {g.headline} depends on disallowed axiom {a}"
+    let reached := closure env [g.headline] {}
+    for d in g.required do
       unless reached.contains d do
-        throwError "dependency gate: {headline} does not reach {d}"
+        throwError "dependency gate: {g.headline} does not reach {d}"
+    for d in g.forbidden do
+      if reached.contains d then
+        throwError "dependency gate: {g.headline} must not reach {d}"
   IO.println s!"bridge audit: swept {swept} declaration(s), axioms clean; all \
-{gates.length} headline(s) reach their required dependencies"
+{gates.length} headline(s) pass their dependency gates"
