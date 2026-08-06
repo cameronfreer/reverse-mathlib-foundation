@@ -1,7 +1,7 @@
 name = "reverse-mathlib-foundation"
 version = "0.1.0"
 license = "Apache-2.0"
-defaultTargets = ["RMFoundationBridge"]
+defaultTargets = ["RMFoundationBridge", "RMFoundationBridgeMeta"]
 
 # Tranche F1: the isolated omega-semantics bridge. This workspace pins exact revisions of
 # BOTH projects and depends on both; the two core repositories never depend on each other
