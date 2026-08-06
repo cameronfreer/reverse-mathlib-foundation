@@ -10,6 +10,43 @@ pinned revisions (see `lakefile.toml`), on Foundation's toolchain, with narrow
 Foundation imports only — never `import Foundation`. No changes to either core are
 made from here.
 
+## How it works
+
+reverse-mathlib's ω layer states *capabilities at a second-order part* — `WeakKonigAt Ω`,
+`EFILCAt Ω`, `CountableHallAt Ω` are ordinary propositions about a collection of subsets
+of ℕ — and certifies facts about Turing ideals. But that layer has no formal language:
+"REC is a model of RCA₀" is not even sayable there. Foundation has the language and the
+Tarski semantics, and knows nothing about reverse-mathlib. This bridge proves that the
+frozen ω-objects **are** the models and satisfaction relations of genuine L₂ sentences,
+in five moves:
+
+1. **The structure.** `OmegaPart.toFoundation` packages `Ω` as a Foundation `Struc₂`:
+   number sort standard ℕ under an explicitly *verified* interpretation, set sort exactly
+   `Ω.sets`. Satisfaction is **definitionally** Tarski evaluation with set quantifiers
+   ranging over `Ω.sets` — models are never constructed, only unfolded.
+2. **The theory and the one hard axiom.** `Rca0Theory`'s basic axioms and Σ⁰₁-induction
+   hold over *any* second-order part, because the first-order part is standard ℕ. The
+   Turing-ideal hypothesis is consumed in exactly one place — Δ⁰₁ comprehension — where a
+   computability chain (executable Δ⁰₀ evaluator ∥ Tarski agreement ∥ relative
+   computability, meeting in Σ⁰₁ stage predicates and a dovetailed Δ⁰₁ decision) shows
+   the defined set is Turing-reducible to the parameters, hence in the ideal.
+3. **The adapters.** Each sentence must *mean* its frozen capability for **arbitrary**
+   `Ω`. Two decisions make the adapters unconditional: the sentences talk about the
+   *frozen* `seqCode` coding (a coding translation would need `Ω` closed under it,
+   smuggling an ideal premise into statement adequacy), and the coding's operations are
+   arithmetized by Gödel-β-coded runs — over standard ℕ only truth matters, not
+   hierarchy position, so unbounded quantifiers are free.
+4. **The payoffs.** Adapter + context realization + the frozen Kleene tree give the
+   checked ω-model countermodel (`rca0_not_semantically_implies_wkl`); a Henkin-safe
+   calculus, sound for *every* `Struc₂`, turns it into calculus-relative
+   nonderivability (`rca0_not_derives_wkl`).
+5. **The contract.** Typed export records carry the epistemic scope in their types;
+   audit gates check each record reaches its named theorem and nothing it must not.
+
+In one sentence: the bridge turns "the Kleene tree defeats WKL over REC" from a fact
+about a Lean predicate into a checked model-theoretic and proof-theoretic statement
+about formal RCA₀ — without moving a line of either frozen codebase.
+
 ## What is proved
 
 **F1 — semantic adequacy (forward direction) and the ω-model countermodel.**
