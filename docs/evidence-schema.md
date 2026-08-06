@@ -61,6 +61,7 @@ may downgrade (see *Trust*).
   "theorem": "RMFoundationBridge.forward_adequacy",
   "theory": "RMFoundationBridge.Rca0Theory",
   "contextKey": "rca0/turingIdealOmega",
+  "context": "ReverseMathlib.Omega.IsTuringIdeal",
   "direction": "forward", "realizationStatus": "realizationOnly" }
 
 { "kind": "statementAdapter", "id": "adapter.wkl.binaryTree.foundationL2",
@@ -118,9 +119,10 @@ Kinds resolve to **different** local object kinds, each through a registered
   model-facing capability are distinct artifacts;
 - calculus records are **bridge-local** and carry no catalog alias at all.
 
-After resolution the importer verifies the semantic anchors: the resolved variant's
-registered `interface` must be exactly the record's declared `capability`, and the
-resolved context's `contextDecl` must be exactly the declared context predicate.
+After resolution the importer verifies the semantic anchors by exact declaration
+identity: the resolved variant's registered `interface` must be exactly the record's
+declared `capability`, and the resolved context's `contextDecl` must be exactly the
+record's declared `context` predicate.
 Backend records may *reference* contexts and variants; they are simply *stored* outside
 those families.
 

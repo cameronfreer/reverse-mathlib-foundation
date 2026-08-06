@@ -114,6 +114,7 @@ open EmitEvidence in
        ("theorem", "RMFoundationBridge.forward_adequacy"),
        ("theory", "RMFoundationBridge.Rca0Theory"),
        ("contextKey", "rca0/turingIdealOmega"),
+       ("context", "ReverseMathlib.Omega.IsTuringIdeal"),
        ("direction", directionTag rca0RealizationExport.direction),
        ("realizationStatus", realizationStatusTag rca0RealizationExport.status)],
     adapterRecord "adapter.wkl.binaryTree.foundationL2"
