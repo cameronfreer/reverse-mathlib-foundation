@@ -1,6 +1,6 @@
 {"source":
  {"toolchain": "leanprover/lean4:v4.32.2",
-  "revision": "8edec072f4453e567bbdfc4e09e82ae8bef8e90d",
+  "revision": "39ec48b16a25d1380b09dd3dfc2818e42bdfbbfb",
   "repository": "cameronfreer/reverse-mathlib-foundation",
   "dependencies":
   {"reverse-mathlib": "cf2b730a957ee151f4d6975dafec1c5bfcb99fcd",
@@ -16,7 +16,8 @@
    "id": "realization.rca0.turingIdeal",
    "export": "RMFoundationBridge.rca0RealizationExport",
    "direction": "forward",
-   "contextKey": "rca0/turingIdealOmega"},
+   "contextKey": "rca0/turingIdealOmega",
+   "context": "ReverseMathlib.Omega.IsTuringIdeal"},
   {"variantKey": "wkl/binaryTree.turingIdealOmega",
    "theorem": "RMFoundationBridge.models_wklSentence_iff",
    "status": "backendChecked",
