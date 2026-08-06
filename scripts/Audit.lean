@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Cameron Freer
 -/
 import RMFoundationBridge
+import RMFoundationBridgeMeta
 
 /-!
 # Bridge audit: axioms and headline dependencies
@@ -93,7 +94,9 @@ partial def closure (env : Environment) : List Name → NameSet → NameSet
   let mut swept := 0
   for (name, _) in env.constants.toList do
     if let some idx := env.getModuleIdxFor? name then
-      if (`RMFoundationBridge).isPrefixOf (moduleNames.getD idx.toNat .anonymous) then
+      let mod := moduleNames.getD idx.toNat .anonymous
+      if (`RMFoundationBridge).isPrefixOf mod ∨
+          (`RMFoundationBridgeMeta).isPrefixOf mod then
         let axs ← collectAxioms name
         for a in axs do
           unless allowedAxioms.contains a do

@@ -26,3 +26,17 @@ jobs:
       # derived ŴKL → Hall composition.
       - name: Bridge audit (axioms + dependency gates)
         run: lake env lean scripts/Audit.lean
+
+      # The lean-interface-expr/1 conformance fixtures gate any encoder change.
+      - name: Fingerprint conformance fixtures
+        run: lake env lean scripts/FingerprintSpike.lean
+
+      # Emitter determinism: re-emitting at the recorded export revision must
+      # reproduce the committed evidence byte-for-byte.
+      - name: Evidence emission determinism
+        run: |
+          if [ -f evidence/rmlib-bridge-evidence.json ]; then
+            rev=$(jq -r .source.revision evidence/rmlib-bridge-evidence.json)
+            BRIDGE_EXPORT_REVISION="$rev" lake env lean scripts/EmitEvidence.lean
+            git diff --exit-code evidence/
+          fi

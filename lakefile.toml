@@ -27,3 +27,10 @@ rev = "cf2b730a957ee151f4d6975dafec1c5bfcb99fcd"
 [[lean_lib]]
 name = "RMFoundationBridge"
 leanOptions = { autoImplicit = false, warningAsError = true }
+
+# Interchange tooling (the lean-interface-expr/1 encoder and the evidence emitter's
+# library surface). Kept under its own module prefix, outside the mathematical rollup;
+# swept by the audit separately.
+[[lean_lib]]
+name = "RMFoundationBridgeMeta"
+leanOptions = { autoImplicit = false, warningAsError = true }

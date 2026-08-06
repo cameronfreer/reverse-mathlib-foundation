@@ -35,11 +35,18 @@ The `dependencies.reverse-mathlib` revision is the revision the bridge **checked
 against, truthfully — later reverse-mathlib commits remain compatible exactly when the
 interface fingerprints still match (see *Trust*).
 
-All statuses, directions, and identifiers in `records` are produced by the emitter
-**pattern-matching the typed export-surface constructors** into explicit schema tags
-(`.forward ↦ "forward"`, `.realizationOnly ↦ "realizationOnly"`,
+**Revision provenance**: the emitter takes only the bridge export revision as explicit
+input; the three dependency revisions are derived from `lake-manifest.json` and the
+toolchain from the workspace's `lean-toolchain` file. Every derived revision is
+validated as full lowercase 40-hex.
+
+All **closed status, direction, calculus, and comparison tags** in `records` are
+produced by the emitter **pattern-matching the typed export-surface constructors** into
+explicit schema tags (`.forward ↦ "forward"`, `.realizationOnly ↦ "realizationOnly"`,
 `.unconditional ↦ "unconditional"`, `.henkinSafeV1 ↦ "henkinSafeV1"`,
-`.pending ↦ "pending"`) — never `Repr` output, never hand-written strings.
+`.pending ↦ "pending"`) — never `Repr` output, never hand-written strings. Record ids,
+theorem names, and external keys necessarily come from the explicit emitter manifest;
+they are not recoverable from the typed records alone.
 
 ## Record kinds
 
@@ -53,7 +60,7 @@ may downgrade (see *Trust*).
   "export": "RMFoundationBridge.rca0RealizationExport",
   "theorem": "RMFoundationBridge.forward_adequacy",
   "theory": "RMFoundationBridge.Rca0Theory",
-  "contextKey": "<external key for the Turing-ideal semantic context>",
+  "contextKey": "rca0/turingIdealOmega",
   "direction": "forward", "realizationStatus": "realizationOnly" }
 
 { "kind": "statementAdapter", "id": "adapter.wkl.binaryTree.foundationL2",
@@ -62,8 +69,15 @@ may downgrade (see *Trust*).
   "theorem": "RMFoundationBridge.models_wklSentence_iff",
   "sentence": "RMFoundationBridge.wklSentence",
   "capability": "ReverseMathlib.Omega.WeakKonigAt",
-  "variantKey": "<external key for the exact Turing-ideal statement variant>",
+  "variantKey": "wkl/binaryTree.turingIdealOmega",
   "adapterStatus": "unconditional" }
+// likewise, following the family/presentation convention (presentation-explicit,
+// never pretending the bridge sentence is itself the alias target):
+//   adapter.efilc.explicitSequential.enumeratedFibers.foundationL2
+//     with variantKey "efilc/explicitSequential.enumeratedFibers.turingIdealOmega"
+//   adapter.countableHall.oneSidedInjective.enumeratedCandidates.foundationL2
+//     with variantKey
+//     "countableHall/oneSidedInjective.enumeratedCandidates.turingIdealOmega"
 
 { "kind": "calculusIdentity", "id": "calculus.henkinSafeV1",
   "status": "backendChecked",
@@ -93,14 +107,15 @@ agree with the nonderivability record's own view of them.
 Kinds resolve to **different** local object kinds, each through a registered
 `exactAlias` in the `rmFoundationBridge` namespace:
 
-- `contextRealization.contextKey` → a registered **SemanticContext** (requires
-  extending `CatalogObjectRef` with a `semanticContext` kind on the reverse-mathlib
-  side, or a backend-specific context crosswalk);
-- `statementAdapter.variantKey` → a registered **StatementVariant** — the local
-  capability presentation (e.g. `WeakKonigAt`'s exact Turing-ideal variant). The
-  bridge-side `sentence` is **never** an alias of that variant: the adapter theorem
-  exists precisely because the L₂ syntax and the model-facing capability are distinct
-  artifacts;
+- `contextRealization.contextKey` `rca0/turingIdealOmega` → the registered
+  **SemanticContext** `rca0.turingIdealOmega` (requires extending `CatalogObjectRef`
+  with a `semanticContext` kind on the reverse-mathlib side, or a backend-specific
+  context crosswalk);
+- `statementAdapter.variantKey` → the registered **StatementVariant** for the exact
+  Turing-ideal presentation (e.g. `wkl/binaryTree.turingIdealOmega` → `WeakKonigAt`'s
+  exact Turing-ideal variant). The bridge-side `sentence` is **never** an alias of that
+  variant: the adapter theorem exists precisely because the L₂ syntax and the
+  model-facing capability are distinct artifacts;
 - calculus records are **bridge-local** and carry no catalog alias at all.
 
 After resolution the importer verifies the semantic anchors: the resolved variant's
@@ -122,9 +137,11 @@ records actually mean locally):
 **Closure** — the recursive semantic-interface closure from the roots:
 
 - always include a declaration's **type**;
-- include **bodies** of definitions and abbreviations (they carry the meaning);
-- include **constructor types** of inductives and structures (constructors and
-  recursors are attributed to their inductive);
+- include **bodies** of definitions, abbreviations, and **opaque definitions** (an
+  owned opaque can carry semantic meaning);
+- include **constructor types** of inductives and structures (constructors are
+  attributed to their inductive; a recursor enqueues **every** inductive of its
+  possibly-mutual group — never silently only the first);
 - recursively follow **reverse-mathlib-owned** dependencies of the included
   components;
 - **never** include theorem proof bodies or other proof-only dependencies —
@@ -154,13 +171,16 @@ under-covered manifest is rejected, not partially accepted. The canonical payloa
 carried verbatim in the JSON (`canonicalInterface`); a cryptographic digest is an
 optional future display convenience, not the comparand.
 
-**Pinned regression fixtures** (must pass before ingestion is wired):
+**Pinned regression fixtures** (`scripts/FingerprintSpike.lean`; must stay green
+before ingestion is wired):
 
 1. checked revision vs. a docs-only later revision: equal;
 2. a semantic definition-body change: mismatch;
 3. a theorem proof-body change: still equal;
 4. a metadata or binder-name-only change: still equal;
-5. a missing or extra covered declaration: hard failure.
+5. an **opaque body change**: mismatch;
+6. a **mutual recursor**: covers every inductive of its group;
+7. a missing or extra covered declaration: hard failure.
 
 ## Trust and fail-closed discipline
 
