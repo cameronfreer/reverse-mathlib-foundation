@@ -1,29 +1,77 @@
 # reverse-mathlib-foundation
 
-**Tranche F1: the isolated ω-semantics bridge** between two pinned projects —
-[reverse-mathlib](https://github.com/cameronfreer/reverse-mathlib) (the Turing-ideal ω
-layer, frozen) and [Foundation](https://github.com/FormalizedFormalLogic/Foundation)
-(second-order Tarski semantics). Neither core repository depends on the other; this
-workspace depends on both, at exact pinned revisions (see `lakefile.toml`), on
-Foundation's toolchain. Narrow Foundation imports only — never `import Foundation`.
+An **external checked bridge** between
+[reverse-mathlib](https://github.com/cameronfreer/reverse-mathlib) (the Turing-ideal
+ω layer, frozen) and
+[FormalizedFormalLogic/Foundation](https://github.com/FormalizedFormalLogic/Foundation)
+(second-order Tarski semantics). It is **not** a component of either project: neither
+core repository depends on the other, and this workspace depends on both at exact
+pinned revisions (see `lakefile.toml`), on Foundation's toolchain, with narrow
+Foundation imports only — never `import Foundation`. No changes to either core are
+made from here.
 
-Semantic bridge only: no derivation calculus, no soundness (tranche F3), no upstream
-action, no changes to either core. The reverse-mathlib scoreboard (ω-model: 3 /
-all-model: 0 / syntactic: 0) is not affected by anything here — adequacy evidence
-upgrades interpretation status, it is not another mathematical leaf.
+## What is proved
 
-## F1 state
+**F1 — semantic adequacy (forward direction) and the ω-model countermodel.**
 
-- [x] Step 0 — pinned import-surface prototype: both projects compile in one workspace
-      (reverse-mathlib `ff824c1` rebuilt under Lean v4.32.2 + mathlib v4.32.2-tag;
-      Foundation `9800e78`).
-- [x] Step 1 — `OmegaPart.toFoundation` with the standard arithmetic interpretation on ℕ
-      supplied and verified explicitly (never manufactured implicitly); evaluation bridge
-      lemmas; first cross-layer REC evaluation.
-- [ ] Step 2 — the explicit semantic RCA₀^ω theory (restricted comprehension as explicit
-      theory obligations, never hidden in logical substitution).
-- [ ] Step 3 — both directional context-adequacy theorems, kept separate until exact:
-      `IsTuringIdeal Ω → Ω.toFoundation ⊧* RCA₀^ω` (unlocks the REC countermodel reading)
-      and the converse (unlocks universal positive ω-model readings).
-- [ ] Step 4 — the exact binary-tree WKL statement adapter.
-- [ ] Step 5 — the REC regression: `M_REC ⊧ RCA₀^ω` and `M_REC ⊭ ŴKL`.
+- `Rca0Theory`: the explicit semantic RCA₀ theory on ω-structures (basic axioms, Σ⁰₁
+  induction, Δ⁰₁ comprehension as explicit theory obligations).
+- `forward_adequacy`: every Turing ideal satisfies every axiom of `Rca0Theory` —
+  built through an executable Δ⁰₀ evaluator, Tarski agreement, bounded oracle
+  recursion, Σ⁰₁ stage / Π⁰₁ costage predicates, and a dovetailed Δ⁰₁ decision.
+  **One-way realization evidence only**: the converse (realizers are ideals) is
+  deliberately absent.
+- `wklSentence` and `models_wklSentence_iff`: the exact binary-tree ŴKL sentence over
+  the frozen `seqCode` coding, with an **unconditional** adapter — for arbitrary `Ω`,
+  satisfaction is exactly the frozen `WeakKonigAt Ω`. The coding is arithmetized via
+  Gödel's β (mathlib's `Nat.beta`).
+- `rca0_not_semantically_implies_wkl`: the checked REC countermodel — one structure
+  satisfies every `Rca0Theory` axiom and falsifies `wklSentence` (via the frozen
+  Kleene tree).
+
+**F3 — a Henkin-safe calculus and calculus-relative nonderivability.**
+
+- `Derivable`: a bridge-local Hilbert-style calculus over open matrices whose open set
+  slots are read universally over the designated second-order part. Second-order
+  existential introduction is **from an open set slot only**; no rule manufactures a
+  set, so comprehension enters only through the axiom set. Foundation's LK
+  formula-witness rule (comprehension built into the logic) is deliberately not used.
+- `soundness` / `soundness_sentence`: sound for **every** `Struc₂ ℒₒᵣ` — arbitrary
+  domain, interpretation, and designated second-order part.
+- `rca0_not_derives_wkl`: `Rca0Theory ⊬ wklSentence` **in this calculus**.
+  *Proof-system-adequacy debt, recorded*: `Derivable` is not yet proved equivalent to
+  any pinned standard proof system, so this never renders as an unqualified
+  Simpson-style RCA₀ ⊬ WKL. No completeness claim is made anywhere.
+
+**F2 — exact EFILC and one-sided Hall adapters, and ideal-level transfers.**
+
+- `efilcSentence` / `models_efilcSentence_iff` and `hallSentence` /
+  `models_hallSentence_iff`: exact sentences against the frozen
+  `InternalInverseSystem` and `InternalHallFamily` presentations (the Hall marriage
+  condition arithmetized as coded lists, proved equivalent to the frozen
+  `Finset`-and-witness reading by `marriage_char`), both adapters **unconditional**.
+- `SentenceTransfer`: EFILC ↔ ŴKL and EFILC → Hall at every Turing ideal, via the
+  three frozen certified transformations; the ŴKL → Hall composition is flagged
+  derived-only. `rca0_not_semantically_implies_efilc` is the EFILC countermodel.
+
+## The export surface
+
+`RMFoundationBridge/ExportSurface.lean` is the only export contract: **typed** records
+(`ContextRealizationCertificate` — direction `forward`, status `realizationOnly`;
+three `StatementAdapterCertificate`s — `unconditional`; `CalculusRecord` — id
+`henkinSafeV1`, comparison `pending`; `NonderivabilityCertificate` — structurally
+keyed to the calculus id). Downstream consumers cite these records and nothing else.
+
+The reverse-mathlib certified scoreboard (ω-model: 3 / all-model: 0 / syntactic: 0)
+is unaffected by anything here — adequacy evidence upgrades interpretation status; it
+is not another mathematical leaf.
+
+## Verification
+
+- `lake build` — the full rollup, `warningAsError` on.
+- `lake env lean scripts/Audit.lean` — axiom sweep (standard three only, every
+  bridge-owned declaration including private/auxiliary) plus per-headline dependency
+  gates: each gated theorem and export record must reach its named load-bearing
+  dependencies, and no export leaf may reach the derived composition.
+
+Both run in CI on every push.

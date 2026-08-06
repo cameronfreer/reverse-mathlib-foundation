@@ -1,0 +1,28 @@
+name: Lean Action CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Builds the `RMFoundationBridge` rollup (strict — `warningAsError` is on),
+      # including the pinned reverse-mathlib rebuilt under Foundation's toolchain.
+      - uses: leanprover/lean-action@v1
+
+      # The bridge audit: an axiom sweep over every declaration owned by an
+      # `RMFoundationBridge` module (standard axioms only, no exemption mechanism),
+      # plus per-headline dependency gates — each gated theorem and export record must
+      # reach its named load-bearing dependencies, and no export leaf may reach the
+      # derived ŴKL → Hall composition.
+      - name: Bridge audit (axioms + dependency gates)
+        run: lake env lean scripts/Audit.lean
