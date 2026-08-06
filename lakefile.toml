@@ -6,7 +6,7 @@ defaultTargets = ["RMFoundationBridge"]
 # Tranche F1: the isolated omega-semantics bridge. This workspace pins exact revisions of
 # BOTH projects and depends on both; the two core repositories never depend on each other
 # and are never modified from here. Toolchain: Foundation's (v4.32.2); reverse-mathlib
-# (pinned below) is rebuilt inside this workspace against this workspace's mathlib.
+# (pinned below) is natively on the same toolchain and mathlib since its v4.32.2 upgrade (PR #35).
 
 # The single mathlib for the whole workspace: the v4.32.2 tag, matching Foundation's pin.
 [[require]]
@@ -22,7 +22,7 @@ rev = "9800e78127294798496adc6e37c8b9ded637d93a"
 [[require]]
 name = "reverse-mathlib"
 git = "https://github.com/cameronfreer/reverse-mathlib"
-rev = "ff824c13d963fcbfd28d7af85b3cf3f14704d4a4"
+rev = "cf2b730a957ee151f4d6975dafec1c5bfcb99fcd"
 
 [[lean_lib]]
 name = "RMFoundationBridge"
