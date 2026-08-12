@@ -97,11 +97,16 @@ about formal RCA₀ — without moving a line of either frozen codebase.
 (`ContextRealizationCertificate` — direction `forward`, status `realizationOnly`;
 three `StatementAdapterCertificate`s — `unconditional`; `CalculusRecord` — id
 `henkinSafeV1`, comparison `pending`; `NonderivabilityCertificate` — structurally
-keyed to the calculus id). Downstream consumers cite these records and nothing else.
+keyed to the calculus id; `SemanticCountermodelCertificate` — scope `allModels` over
+general `Struc₂` structures, witnessed by an ω-structure). Downstream consumers cite
+these records and nothing else.
 
-The reverse-mathlib certified scoreboard (ω-model: 3 / all-model: 0 / syntactic: 0)
-is unaffected by anything here — adequacy evidence upgrades interpretation status; it
-is not another mathematical leaf.
+The reverse-mathlib **local certified facts** are unaffected by anything here —
+adequacy evidence upgrades interpretation status, not another mathematical leaf. The
+one exception is explicit and labeled: the validated semantic-countermodel record
+contributes reverse-mathlib's backend-qualified all-model scoped result
+(`all-model: 1 (backendChecked)`), the exact statement `Rca0Theory ⊭ wklSentence`
+over all general L₂ structures — never an unqualified conventional-RCA₀ claim.
 
 ## Verification
 

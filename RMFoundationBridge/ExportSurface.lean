@@ -29,8 +29,13 @@ Epistemic boundary, restated as types:
 * **Nonderivability is calculus-relative**: the record type is indexed by the calculus
   identifier, so it cannot render as a generic RCA₀ ⊬ WKL.
 
-No certified fact is added and no scoreboard changes: these are evidence records about
-theorems the bridge already owns.
+* **The semantic countermodel is scope-tagged** (`SemanticScopeTag.allModels`,
+  `ModelClassTag.foundationStruc2General`): the all-model nonconsequence over general
+  `Struc₂` structures, witnessed by an ω-structure (provenance, not scope).
+
+No local certified fact is added: these are evidence records about theorems the
+bridge already owns. The consumer may count the validated semantic-countermodel
+record in its explicitly backend-qualified scoped-results scoreboard.
 -/
 
 namespace RMFoundationBridge

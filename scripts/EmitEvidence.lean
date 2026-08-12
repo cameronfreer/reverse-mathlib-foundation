@@ -7,7 +7,7 @@ import RMFoundationBridge
 import RMFoundationBridgeMeta
 
 /-!
-# The backend-evidence emitter: `rmlib-bridge-evidence/1`
+# The backend-evidence emitter: `rmlib-bridge-evidence/2`
 
 Run via `BRIDGE_EXPORT_REVISION=<40-hex> lake env lean scripts/EmitEvidence.lean`;
 writes `evidence/rmlib-bridge-evidence.json` deterministically (fixed field order, no

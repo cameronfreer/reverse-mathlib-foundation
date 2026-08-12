@@ -1,7 +1,7 @@
 # Backend-evidence interchange: `rmlib-bridge-evidence/2`
 
 The versioned canonical JSON contract by which reverse-mathlib ingests this bridge's
-export surface as **backend evidence** — a fourth evidence grade, stored apart from
+export surface as **backend evidence** — its own evidence family, stored apart from
 certified facts, imported reductions, and reported corpus findings. The certified
 scoreboard is structurally out of reach. Schema review precedes implementation; the
 fingerprint encoder is spiked with regression fixtures before either the emitter or the
