@@ -1,4 +1,4 @@
-# Backend-evidence interchange: `rmlib-bridge-evidence/1`
+# Backend-evidence interchange: `rmlib-bridge-evidence/2`
 
 The versioned canonical JSON contract by which reverse-mathlib ingests this bridge's
 export surface as **backend evidence** — a fourth evidence grade, stored apart from
@@ -10,7 +10,7 @@ importer lands.
 ## Envelope
 
 ```json
-{ "schema": "rmlib-bridge-evidence/1",
+{ "schema": "rmlib-bridge-evidence/2",
   "fingerprintSchema": "lean-interface-expr/1",
   "source": {
     "repository": "cameronfreer/reverse-mathlib-foundation",
@@ -50,8 +50,10 @@ they are not recoverable from the typed records alone.
 
 ## Record kinds
 
-Four kinds, one record per typed export; the semantic countermodels are deliberately
-not records. Every record carries `"status": "backendChecked"` as emitted; the importer
+Five kinds, one record per typed export. (Schema `/1` had four kinds and treated the
+semantic countermodels as deliberately not records; `/1` is intentionally retired — the
+sole consumer pins exact artifact revisions, and no `/1` artifact remains referenced.)
+Every record carries `"status": "backendChecked"` as emitted; the importer
 may downgrade (see *Trust*).
 
 ```json
@@ -213,3 +215,27 @@ before ingestion is wired):
   `Rca0Theory ⊬ wklSentence in henkinSafeV1 (standard-calculus comparison pending)`,
   generated from the typed `calculusId` and `standardComparison` fields — the
   qualifier cannot be dropped without changing the data.
+
+
+### `semanticCountermodel`
+
+The all-model semantic nonconsequence: the theory does not semantically imply
+the sentence over the general `Struc₂` class. One record:
+`countermodel.rca0.wkl.allModels`.
+
+- `export`, `theorem` — the typed export record and the named theorem
+  (`rca0_not_semantically_implies_wkl`).
+- `contextRealization`, `sentenceAdapter` — typed references, **identity checks
+  only**: the referenced realization record must name exactly this record's
+  `theory`, and the referenced adapter exactly this record's `sentence`.
+  Neither reference licenses an all-model adapter to any local capability —
+  the adapters characterize satisfaction over ω-structures only.
+- `theory`, `sentence` — the exact Foundation-side identities.
+- `scope` — closed tag, `allModels`.
+- `modelClass` — closed tag, `foundationStruc2General`: Foundation's `Struc₂`
+  (general/Henkin-style second-order structures at universe `{0, 0}`), the
+  standard model class for subsystems of Z₂. Explanatory prose is generated at
+  render time, never stored.
+- `witnessProvenance`/`witnessBase` — provenance, not scope: the countermodel
+  witness is the ω-structure over `ReverseMathlib.Omega.recursivePart`; an
+  ω-countermodel is in particular an L₂ countermodel.

@@ -73,6 +73,9 @@ def gates : List Gate :=
    { headline := ``RMFoundationBridge.wklNonderivabilityExport
      required := [``RMFoundationBridge.rca0_not_derives_wkl,
        ``RMFoundationBridge.soundness]
+     forbidden := derivedOnly },
+   { headline := ``RMFoundationBridge.wklCountermodelExport
+     required := [``RMFoundationBridge.rca0_not_semantically_implies_wkl]
      forbidden := derivedOnly }]
 
 /-- Transitive constant closure over types and values (fail-open on missing constants

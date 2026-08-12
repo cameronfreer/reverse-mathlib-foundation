@@ -102,6 +102,29 @@ structure NonderivabilityCertificate (id : BridgeCalculusId)
     (sentence : SecondOrder.Sentence ℒₒᵣ) where
   underivable_in_bridge_calculus : ¬ Derivable theory sentence
 
+/-- **Scope vocabulary for semantic nonconsequence records**: the general L₂
+model class. Closed tag; explanatory prose is generated at render time. -/
+inductive SemanticScopeTag
+  | allModels
+  deriving DecidableEq, Repr
+
+/-- **Model-class vocabulary**: Foundation's `Struc₂` — general (Henkin-style)
+second-order structures, the standard model class for subsystems of Z₂. -/
+inductive ModelClassTag
+  | foundationStruc2General
+  deriving DecidableEq, Repr
+
+/-- **Semantic countermodel**, structurally keyed to scope and model class: the
+theory does not semantically imply the sentence over the general `Struc₂` class.
+The witness (an ω-structure) is provenance, not the scope — an ω-countermodel is
+in particular an L₂ countermodel. -/
+structure SemanticCountermodelCertificate
+    (theory : Set (SecondOrder.Sentence ℒₒᵣ))
+    (sentence : SecondOrder.Sentence ℒₒᵣ) where
+  scope : SemanticScopeTag
+  modelClass : ModelClassTag
+  countermodel : ∃ M : Struc₂.{0, 0} ℒₒᵣ, (∀ σ ∈ theory, M ⊧ σ) ∧ ¬ M ⊧ sentence
+
 /-! ### The export records -/
 
 /-- Export 1 — the one-way context realization: `forward_adequacy`, in `⊧*` form. -/
@@ -138,5 +161,14 @@ def bridgeCalculusExport : CalculusRecord where
 theorem wklNonderivabilityExport :
     NonderivabilityCertificate .henkinSafeV1 Rca0Theory wklSentence :=
   ⟨rca0_not_derives_wkl⟩
+
+/-- Export 5 — the all-model semantic countermodel:
+`rca0_not_semantically_implies_wkl`, keyed to scope `allModels` over the general
+`Struc₂` class. -/
+def wklCountermodelExport :
+    SemanticCountermodelCertificate Rca0Theory wklSentence where
+  scope := .allModels
+  modelClass := .foundationStruc2General
+  countermodel := rca0_not_semantically_implies_wkl
 
 end RMFoundationBridge

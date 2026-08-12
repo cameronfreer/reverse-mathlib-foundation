@@ -49,6 +49,12 @@ def calculusIdTag : BridgeCalculusId → String
 def comparisonTag : CalculusComparisonStatus → String
   | .pending => "pending"
 
+def scopeTag : SemanticScopeTag → String
+  | .allModels => "allModels"
+
+def modelClassTag : ModelClassTag → String
+  | .foundationStruc2General => "foundationStruc2General"
+
 /-! ### Revision provenance -/
 
 /-- Manifest package names may be guillemet-quoted (`«reverse-mathlib»`); normalize
@@ -153,9 +159,23 @@ open EmitEvidence in
        ("calculusRecord", "calculus.henkinSafeV1"),
        ("sentenceAdapter", "adapter.wkl.binaryTree.foundationL2"),
        ("theory", "RMFoundationBridge.Rca0Theory"),
-       ("sentence", "RMFoundationBridge.wklSentence")]]
+       ("sentence", "RMFoundationBridge.wklSentence")],
+    Json.mkObj
+      [("kind", "semanticCountermodel"),
+       ("id", "countermodel.rca0.wkl.allModels"),
+       ("status", "backendChecked"),
+       ("export", "RMFoundationBridge.wklCountermodelExport"),
+       ("theorem", "RMFoundationBridge.rca0_not_semantically_implies_wkl"),
+       ("contextRealization", "realization.rca0.turingIdeal"),
+       ("sentenceAdapter", "adapter.wkl.binaryTree.foundationL2"),
+       ("theory", "RMFoundationBridge.Rca0Theory"),
+       ("sentence", "RMFoundationBridge.wklSentence"),
+       ("scope", scopeTag wklCountermodelExport.scope),
+       ("modelClass", modelClassTag wklCountermodelExport.modelClass),
+       ("witnessProvenance", "omegaStructure"),
+       ("witnessBase", "ReverseMathlib.Omega.recursivePart")]]
   let out := Json.mkObj
-    [("schema", "rmlib-bridge-evidence/1"),
+    [("schema", "rmlib-bridge-evidence/2"),
      ("fingerprintSchema", "lean-interface-expr/1"),
      ("source", Json.mkObj
        [("repository", "cameronfreer/reverse-mathlib-foundation"),
