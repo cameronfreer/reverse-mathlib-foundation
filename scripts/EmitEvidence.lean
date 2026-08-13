@@ -194,7 +194,8 @@ open EmitEvidence in
        ("derivability", "RMFoundationBridge.StdLKProvable"),
        ("soundness", "RMFoundationBridge.StdLKProvable.soundness"),
        ("sortAssumption", sortAssumptionTag stdCalculusExport.sortAssumption),
-       ("source", "[Sim09] §I.2 (assumed two-sorted logic, nonempty sorts; bridge-defined LK presentation at the pinned Foundation rule shape, variable-witness ∃² rule)")],
+       ("equalityRules", equalityRulesTag stdCalculusExport.equalityRules),
+       ("source", "[Sim09] §I.2 (assumed two-sorted logic with equality, nonempty sorts; bridge-defined LK presentation at the pinned Foundation rule shape, variable-witness ∃² rule, equality reflexivity and substitution)")],
     Json.mkObj
       [("kind", "calculusComparison"),
        ("id", "calculus.comparison.l2VarWitnessLK.henkinSafeV1"),
