@@ -86,19 +86,24 @@ about formal RCA₀ — without moving a line of either frozen codebase.
   [Sim09] §I.2 — Foundation's pinned `Derivation` rule shape verbatim, except the
   second-order existential rule witnesses a **set variable** (the only set terms L₂
   has), never a formula: Foundation's formula-witness `exs₂` builds unrestricted
-  comprehension into the logic and is deliberately excluded. The identification with
-  Simpson's prose is a documented reading, never a checked claim.
+  comprehension into the logic and is deliberately excluded (and audit-gated out of
+  the standard-calculus route). **Logical equality is included** (`eqRefl`,
+  `eqSubst` — Simpson's "usual logical axioms, including equality"). The
+  identification with Simpson's prose is a documented reading, never a checked claim.
 - `StdLK.soundness` / `StdLKProvable.soundness`: **direct** soundness (no embedding
   into `Derivable`, no completeness). The theory-level form consumes
-  `M.sets.Nonempty` — Simpson's nonempty-sort assumption as an explicit hypothesis.
-  The deliberate contrast is checked: `stdLK_derives_exs₂_verum` proves `∃X ⊤`
-  outright, which `Derivable` cannot (it is sound for empty designated parts).
+  `M.sets.Nonempty` and `EqCorrect M` (the equality symbol means identity) —
+  Simpson's assumptions as explicit hypotheses. The deliberate contrast is checked:
+  `stdLK_derives_exs₂_verum` proves `∃X ⊤` outright, which `Derivable` cannot (it is
+  sound for empty designated parts) — refuting the identity-preserving embedding of
+  the standard calculus into the Henkin-safe one; no claim is made about the reverse
+  direction.
 - `rca0_not_stdLK_proves_wkl` (`StandardTurnstile.lean`):
   `Rca0Theory ⊬ wklSentence` **in `l2VarWitnessLK.v1`** — direct soundness at the REC
   structure (designated part nonempty) refuted through the Kleene tree. This
   discharges the previously recorded proof-system-adequacy debt by the direct-
-  soundness route; the two calculi remain **independently** sound with no embedding
-  claimed in either direction.
+  soundness route; the two calculi remain **independently** sound, and no record
+  carries or licenses a derivability transfer between them.
 
 **F2 — exact EFILC and one-sided Hall adapters, and ideal-level transfers.**
 

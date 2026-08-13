@@ -37,6 +37,13 @@ structure Gate where
 def derivedOnly : List Name :=
   [``RMFoundationBridge.models_hallSentence_of_models_wklSentence]
 
+/-- Foundation's formula-witness second-order existential rule (comprehension built
+into the logic) must stay out of the standard-calculus route: its exclusion is
+load-bearing, so it is gate-checked, not merely visible in the inductive
+definition. -/
+def formulaWitness : List Name :=
+  [``LO.SecondOrder.Derivation.exs₂]
+
 def gates : List Gate :=
   [{ headline := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
      required := [``RMFoundationBridge.forward_adequacy,
@@ -83,18 +90,19 @@ def gates : List Gate :=
      required := [``RMFoundationBridge.StdLK.soundness,
        ``RMFoundationBridge.forward_adequacy,
        ``RMFoundationBridge.models_wklSentence_iff,
-       ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart] },
+       ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart]
+     forbidden := formulaWitness },
    { headline := ``RMFoundationBridge.stdCalculusExport
      required := [``RMFoundationBridge.StdLK.soundness]
-     forbidden := derivedOnly },
+     forbidden := derivedOnly ++ formulaWitness },
    { headline := ``RMFoundationBridge.calculusComparisonExport
      required := [``RMFoundationBridge.StdLK.soundness,
        ``RMFoundationBridge.soundness]
-     forbidden := derivedOnly },
+     forbidden := derivedOnly ++ formulaWitness },
    { headline := ``RMFoundationBridge.wklStandardNonprovabilityExport
      required := [``RMFoundationBridge.rca0_not_stdLK_proves_wkl,
        ``RMFoundationBridge.StdLK.soundness]
-     forbidden := derivedOnly }]
+     forbidden := derivedOnly ++ formulaWitness }]
 
 /-- Transitive constant closure over types and values (fail-open on missing constants
 is impossible: every used constant of an elaborated declaration is in the

@@ -18,8 +18,11 @@ revision) **except for the second-order existential rule**: Foundation's `exs₂
 with an arbitrary formula (`φ/⟦ψ⟧`), which builds unrestricted comprehension into the
 logic and is sound only for full semantics; here `exs₂` witnesses with a **set variable**
 (`φ/⟦#0 ∈& X⟧`) — the only set terms L₂ has — so comprehension can enter only through
-axioms. The judgment is Prop-valued (only soundness is consumed downstream); the rules
-are otherwise verbatim, over Foundation's own `Sequent`/`Semiproposition` syntax.
+axioms; and **logical equality is included** (`eqRefl`, `eqSubst` — Simpson's "usual
+logical axioms, including equality"), sound against structures whose equality symbol
+means identity (`EqCorrect`, an explicit hypothesis of soundness). The judgment is
+Prop-valued (only soundness is consumed downstream); the rules are otherwise verbatim,
+over Foundation's own `Sequent`/`Semiproposition` syntax.
 
 **Direct soundness, no embedding, no completeness.** `soundness` proves: a derivable
 sequent has a true member in **every** `Struc₂ ℒₒᵣ` under every assignment of the free
@@ -29,7 +32,10 @@ part **nonempty** — exactly Simpson's nonempty-sort assumption, surfacing as t
 hypothesis `M.sets.Nonempty` (a free set variable must have somewhere to point). The
 deliberate contrast with the Henkin-safe calculus is checked below:
 `stdLK_derives_exs₂_verum` shows this calculus proves `∃X ⊤` outright, which
-`RMFoundationBridge.Derivable` cannot (it is sound for empty designated parts).
+`RMFoundationBridge.Derivable` cannot (it is sound for empty designated parts) — this
+refutes the identity-preserving embedding of this calculus into the Henkin-safe one;
+**no claim is made about the reverse direction**. Both calculi are independently
+sound, and nothing here carries or licenses a derivability transfer between them.
 
 **Semantic transport.** The one new lemma over `EvalTransport` is `eval_app`: evaluating
 a second-order rewriting `Ω.app φ` (class substitution: every set variable maps to an
@@ -282,6 +288,25 @@ theorem eval_subst_var (φ : SecondOrder.Semiproposition ℒₒᵣ 1 0) (k : ℕ
   rw [hF, hE] at h
   exact h
 
+/-- Evaluating an equality atom is the structure's equality relation at the term
+values. -/
+theorem eval_eqF (t₁ t₂ : Semiterm ℒₒᵣ ℕ 0) (F : ℕ → Set M) (f : ℕ → M) :
+    (eqF t₁ t₂ : SecondOrder.Proposition ℒₒᵣ).Eval 𝕊 F f ![] ![] ↔
+      Structure.rel (L := ℒₒᵣ) (M := M) Language.ORing.Rel.eq
+        ![Semiterm.val ![] f t₁, Semiterm.val ![] f t₂] := by
+  have hv : (Semiterm.val (![] : Fin 0 → M) f ∘ ![t₁, t₂]) =
+      ![Semiterm.val ![] f t₁, Semiterm.val ![] f t₂] := by
+    funext i
+    cases i using Fin.cases with
+    | zero => simp
+    | succ j =>
+        cases j using Fin.cases with
+        | zero => simp
+        | succ k => exact k.elim0
+  show Structure.rel (L := ℒₒᵣ) (M := M) Language.ORing.Rel.eq
+    (Semiterm.val ![] f ∘ ![t₁, t₂]) ↔ _
+  rw [hv]
+
 /-- A coerced sentence evaluates independently of the free-variable assignments,
 as its sentence satisfaction. -/
 theorem eval_emb_sentence (σ : SecondOrder.Sentence ℒₒᵣ) (F : ℕ → Set M) (f : ℕ → M) :
@@ -308,6 +333,13 @@ theorem eval_emb_sentence (σ : SecondOrder.Sentence ℒₒᵣ) (F : ℕ → Set
   exact h₁.trans h₂
 
 end sequentTransport
+
+/-- **Equality-correct semantics**: the structure interprets the equality symbol as
+identity — the hypothesis Simpson's logical equality axioms are sound against. The
+standard interpretation on ℕ satisfies it definitionally
+(`standardInterpretation_eq`). -/
+def EqCorrect (M : Struc₂ ℒₒᵣ) : Prop :=
+  ∀ a b : M.Dom, Structure.rel (L := ℒₒᵣ) (M := M.Dom) Language.ORing.Rel.eq ![a, b] ↔ a = b
 
 /-! ### The pinned standard calculus -/
 
@@ -339,6 +371,9 @@ inductive StdLK : SecondOrder.Sequent ℒₒᵣ → Prop
       StdLK (SecondOrder.Semiproposition.subst₁ φ
         ![(SecondOrder.Semiformula.fvar X (#0 : Semiterm ℒₒᵣ ℕ 1) : SecondOrder.Semiformula ℒₒᵣ ℕ ℕ 0 1)] :: Γ) →
       StdLK ((∃² φ) :: Γ)
+  | eqRefl (t : Semiterm ℒₒᵣ ℕ 0) : StdLK [eqF t t]
+  | eqSubst (t₁ t₂ : Semiterm ℒₒᵣ ℕ 0) (φ : SecondOrder.Semiproposition ℒₒᵣ 0 1) :
+      StdLK [∼(eqF t₁ t₂), ∼(φ/[t₁]), φ/[t₂]]
 
 /-- **The deliberate contrast with the Henkin-safe calculus**: the standard calculus
 proves `∃X ⊤` outright — the nonempty-sort assumption at work. `Derivable ∅` cannot
@@ -354,7 +389,8 @@ structure, arbitrary designated part: a derivable sequent has a true member unde
 assignment of free set variables **into the designated part** and free number variables
 into the domain. Nonemptiness of the part is not needed here (it is needed to *produce*
 an assignment, in `soundness_provable`); no completeness claim is made anywhere. -/
-theorem StdLK.soundness {Δ : SecondOrder.Sequent ℒₒᵣ} (d : StdLK Δ) (M : Struc₂ ℒₒᵣ) :
+theorem StdLK.soundness {Δ : SecondOrder.Sequent ℒₒᵣ} (d : StdLK Δ) (M : Struc₂ ℒₒᵣ)
+    (heq : EqCorrect M) :
     ∀ (F : ℕ → Set M.Dom), (∀ k, F k ∈ M.sets) → ∀ f : ℕ → M.Dom,
       ∃ φ ∈ Δ, φ.Eval M.sets F f ![] ![] := by
   induction d with
@@ -438,6 +474,24 @@ theorem StdLK.soundness {Δ : SecondOrder.Sequent ℒₒᵣ} (d : StdLK Δ) (M :
       · exact ⟨∃² φ, by simp,
           ⟨F X, hF X, (eval_subst_var φ X F f).mp (h₁ ▸ hψ)⟩⟩
       · exact ⟨ψ, by simp [hmem], hψ⟩
+  | eqRefl t =>
+      intro F hF f
+      refine ⟨eqF t t, by simp, ?_⟩
+      exact (eval_eqF t t F f).mpr ((heq _ _).mpr rfl)
+  | eqSubst t₁ t₂ φ =>
+      intro F hF f
+      by_cases he : (eqF t₁ t₂ : SecondOrder.Proposition ℒₒᵣ).Eval M.sets F f ![] ![]
+      · by_cases hφ : φ.Eval M.sets F f ![] ![Semiterm.val ![] f t₁]
+        · refine ⟨φ/[t₂], by simp, ?_⟩
+          rw [eval_subst_term]
+          have hval : Semiterm.val ![] f t₁ = Semiterm.val ![] f t₂ :=
+            (heq _ _).mp ((eval_eqF t₁ t₂ F f).mp he)
+          rw [← hval]
+          exact hφ
+        · refine ⟨∼(φ/[t₁]), by simp, ?_⟩
+          rw [eval_neg' (φ/[t₁]), eval_subst_term]
+          exact hφ
+      · exact ⟨∼(eqF t₁ t₂), by simp, (eval_neg' _).mpr he⟩
 
 /-! ### Theory-level provability and its soundness -/
 
@@ -457,12 +511,12 @@ provable from `Γ` holds in every model of `Γ`. Direct soundness — no embeddi
 Henkin-safe calculus and no completeness theorem anywhere. -/
 theorem StdLKProvable.soundness {Γ : Set (SecondOrder.Sentence ℒₒᵣ)}
     {σ : SecondOrder.Sentence ℒₒᵣ} (h : StdLKProvable Γ σ) (M : Struc₂ ℒₒᵣ)
-    (hne : M.sets.Nonempty) (hΓ : ∀ τ ∈ Γ, M ⊧ τ) : M ⊧ σ := by
+    (hne : M.sets.Nonempty) (heq : EqCorrect M) (hΓ : ∀ τ ∈ Γ, M ⊧ τ) : M ⊧ σ := by
   obtain ⟨axms, haxms, hd⟩ := h
   obtain ⟨S₀, hS₀⟩ := hne
   have hdom : Nonempty M.Dom := M.nonempty
   obtain ⟨x₀⟩ := hdom
-  obtain ⟨ψ, hmem, hψ⟩ := hd.soundness M (fun _ => S₀) (fun _ => hS₀) (fun _ => x₀)
+  obtain ⟨ψ, hmem, hψ⟩ := hd.soundness M heq (fun _ => S₀) (fun _ => hS₀) (fun _ => x₀)
   rcases List.mem_cons.mp hmem with h₁ | hmem
   · exact models_def.mpr ((eval_emb_sentence σ _ _).mp (h₁ ▸ hψ))
   · obtain ⟨τ, hτmem, hτeq⟩ := List.mem_map.mp hmem

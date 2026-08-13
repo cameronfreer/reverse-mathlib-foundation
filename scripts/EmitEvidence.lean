@@ -7,7 +7,7 @@ import RMFoundationBridge
 import RMFoundationBridgeMeta
 
 /-!
-# The backend-evidence emitter: `rmlib-bridge-evidence/3`
+# The backend-evidence emitter: `rmlib-bridge-evidence/4`
 
 Run via `BRIDGE_EXPORT_REVISION=<40-hex> lake env lean scripts/EmitEvidence.lean`;
 writes `evidence/rmlib-bridge-evidence.json` deterministically (fixed field order, no
@@ -56,6 +56,9 @@ def sortAssumptionTag : SortAssumptionTag → String
 
 def relationTag : CalculusRelationTag → String
   | .independentDirectSoundness => "independentDirectSoundness"
+
+def equalityRulesTag : EqualityRulesTag → String
+  | .reflAndSubstitution => "reflAndSubstitution"
 
 def scopeTag : SemanticScopeTag → String
   | .allModels => "allModels"
@@ -211,7 +214,7 @@ open EmitEvidence in
        ("theory", "RMFoundationBridge.Rca0Theory"),
        ("sentence", "RMFoundationBridge.wklSentence")]]
   let out := Json.mkObj
-    [("schema", "rmlib-bridge-evidence/3"),
+    [("schema", "rmlib-bridge-evidence/4"),
      ("fingerprintSchema", "lean-interface-expr/1"),
      ("source", Json.mkObj
        [("repository", "cameronfreer/reverse-mathlib-foundation"),

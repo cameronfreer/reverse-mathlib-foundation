@@ -30,8 +30,10 @@ Epistemic boundary, restated as types:
   Simpson [Sim09] §I.2, carrying its nonempty-sort assumption as a closed tag and its
   **direct** theory-level soundness. Their typed comparison record
   (`CalculusRelationTag.independentDirectSoundness`) states exactly that both are
-  separately sound — **no embedding is claimed in either direction**, so neither
-  calculus's derivability transfers to the other.
+  independently sound; **it carries no embedding and licenses no derivability
+  transfer** in either direction. (The checked ∃X⊤ contrast refutes the
+  identity-preserving embedding of the standard calculus into the Henkin-safe one;
+  no claim is made about the reverse direction.)
 * **Nonderivability is calculus-relative**: each record type is indexed by the calculus
   identifier, so it cannot render as a generic RCA₀ ⊬ WKL. The standard-calculus
   record renders as `Rca0Theory ⊬ wklSentence in l2VarWitnessLK.v1` — the
@@ -95,11 +97,21 @@ inductive SortAssumptionTag
   | nonemptySetSort
   deriving DecidableEq, Repr
 
+/-- Equality rules a calculus carries. Only `reflAndSubstitution` exists: Simpson's
+"usual logical axioms, including equality" — reflexivity and the substitution schema,
+sound against equality-correct structures (`EqCorrect`, an explicit hypothesis of
+soundness). -/
+inductive EqualityRulesTag
+  | reflAndSubstitution
+  deriving DecidableEq, Repr
+
 /-- Relation carried by a calculus-comparison record. Only
-`independentDirectSoundness` exists: both calculi are separately sound over `Struc₂`
-semantics (the Henkin-safe one for every designated part, the pinned standard one for
-nonempty parts); no embedding holds in either direction as stated — the standard
-calculus proves `∃X ⊤` outright, which the Henkin-safe calculus cannot. -/
+`independentDirectSoundness` exists: both calculi are independently sound over
+`Struc₂` semantics (the Henkin-safe one for every designated part, the pinned
+standard one for nonempty equality-correct parts); the record carries no embedding
+and licenses no derivability transfer in either direction. The checked ∃X⊤ contrast
+refutes the identity-preserving embedding of the standard calculus into the
+Henkin-safe one; no claim is made about the reverse direction. -/
 inductive CalculusRelationTag
   | independentDirectSoundness
   deriving DecidableEq, Repr
@@ -166,20 +178,21 @@ hypothesis — and no completeness claim. -/
 structure StandardCalculusRecord where
   id : BridgeCalculusId
   sortAssumption : SortAssumptionTag
+  equalityRules : EqualityRulesTag
   sound : ∀ {Γ : Set (SecondOrder.Sentence ℒₒᵣ)} {σ : SecondOrder.Sentence ℒₒᵣ},
-    StdLKProvable Γ σ → ∀ M : Struc₂.{0, 0} ℒₒᵣ, M.sets.Nonempty →
+    StdLKProvable Γ σ → ∀ M : Struc₂.{0, 0} ℒₒᵣ, M.sets.Nonempty → EqCorrect M →
       (∀ τ ∈ Γ, M ⊧ τ) → M ⊧ σ
 
 /-- **Calculus comparison**, typed: the pinned standard calculus and the Henkin-safe
-calculus are separately sound — the record carries both soundness theorems and the
-closed relation tag, and **deliberately has no embedding field**: no derivability
-transfer between the two calculi is claimed in either direction. -/
+calculus are independently sound — the record carries both soundness theorems and the
+closed relation tag, and **deliberately has no embedding field**: it carries no
+embedding and licenses no derivability transfer in either direction. -/
 structure CalculusComparisonCertificate where
   standard : BridgeCalculusId
   compared : BridgeCalculusId
   relation : CalculusRelationTag
   standardSound : ∀ {Γ : Set (SecondOrder.Sentence ℒₒᵣ)} {σ : SecondOrder.Sentence ℒₒᵣ},
-    StdLKProvable Γ σ → ∀ M : Struc₂.{0, 0} ℒₒᵣ, M.sets.Nonempty →
+    StdLKProvable Γ σ → ∀ M : Struc₂.{0, 0} ℒₒᵣ, M.sets.Nonempty → EqCorrect M →
       (∀ τ ∈ Γ, M ⊧ τ) → M ⊧ σ
   comparedSound : ∀ {Γ : Set (SecondOrder.Sentence ℒₒᵣ)} {σ : SecondOrder.Sentence ℒₒᵣ},
     Derivable Γ σ → ∀ M : Struc₂.{0, 0} ℒₒᵣ, (∀ τ ∈ Γ, M ⊧ τ) → M ⊧ σ
@@ -245,15 +258,16 @@ nonempty-sort assumption as a closed tag. -/
 def stdCalculusExport : StandardCalculusRecord where
   id := .l2VarWitnessLKv1
   sortAssumption := .nonemptySetSort
-  sound := fun h M hne hΓ => h.soundness M hne hΓ
+  equalityRules := .reflAndSubstitution
+  sound := fun h M hne heq hΓ => h.soundness M hne heq hΓ
 
-/-- Export 7 — the typed calculus comparison: both calculi separately sound, no
-embedding in either direction. -/
+/-- Export 7 — the typed calculus comparison: both calculi independently sound; the
+record carries no embedding and licenses no derivability transfer. -/
 def calculusComparisonExport : CalculusComparisonCertificate where
   standard := .l2VarWitnessLKv1
   compared := .henkinSafeV1
   relation := .independentDirectSoundness
-  standardSound := fun h M hne hΓ => h.soundness M hne hΓ
+  standardSound := fun h M hne heq hΓ => h.soundness M hne heq hΓ
   comparedSound := fun h M hΓ => soundness_sentence h M hΓ
 
 /-- Export 8 — the standard-calculus nonprovability: `rca0_not_stdLK_proves_wkl`,

@@ -27,8 +27,9 @@ prose logic is a documented reading of §I.2, not a checked theorem.
 This discharges the proof-system-adequacy debt recorded in `Turnstile.lean` by the route
 that file names ("soundness proved directly for that pinned calculus"): the Henkin-safe
 calculus and the pinned standard calculus are **independently** sound — the Henkin-safe
-one over every designated part, the standard one over nonempty designated parts — and no
-embedding between them is claimed in either direction.
+one over every designated part, the standard one over nonempty equality-correct
+designated parts — and nothing here carries or licenses a derivability transfer
+between them.
 -/
 
 namespace RMFoundationBridge
@@ -45,13 +46,20 @@ theorem recursivePart_toFoundation_sets_nonempty :
   obtain ⟨X, hX, -⟩ := h
   exact ⟨X, hX⟩
 
+/-- The REC structure satisfies the equality-correctness assumption: the standard
+interpretation reads the equality symbol as identity on ℕ (definitionally). -/
+theorem recursivePart_toFoundation_eqCorrect :
+    EqCorrect recursivePart.toFoundation := fun a b =>
+  standardInterpretation_eq ![a, b]
+
 /-- **The standard-calculus negative turnstile**: `Rca0Theory ⊬ ŴKL` in the pinned
 standard calculus `l2VarWitnessLK.v1` — direct soundness instantiated at the REC
-structure (whose designated part is nonempty), refuted by the Kleene tree through the
-unconditional adapter. -/
+structure (whose designated part is nonempty and whose equality symbol means
+identity), refuted by the Kleene tree through the unconditional adapter. -/
 theorem rca0_not_stdLK_proves_wkl : ¬ StdLKProvable Rca0Theory wklSentence := fun h =>
   recursivePart_not_models_wklSentence
     (h.soundness recursivePart.toFoundation recursivePart_toFoundation_sets_nonempty
+      recursivePart_toFoundation_eqCorrect
       fun _ hτ => recursivePart_models_rca0 hτ)
 
 end RMFoundationBridge

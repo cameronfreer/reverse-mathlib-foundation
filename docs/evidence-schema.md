@@ -1,4 +1,4 @@
-# Backend-evidence interchange: `rmlib-bridge-evidence/3`
+# Backend-evidence interchange: `rmlib-bridge-evidence/4`
 
 The versioned canonical JSON contract by which reverse-mathlib ingests this bridge's
 export surface as **backend evidence** — its own evidence family, stored apart from
@@ -10,7 +10,7 @@ importer lands.
 ## Envelope
 
 ```json
-{ "schema": "rmlib-bridge-evidence/3",
+{ "schema": "rmlib-bridge-evidence/4",
   "fingerprintSchema": "lean-interface-expr/1",
   "source": {
     "repository": "cameronfreer/reverse-mathlib-foundation",
@@ -52,10 +52,13 @@ they are not recoverable from the typed records alone.
 
 Seven kinds, one record per typed export. (Schema `/1` had four kinds and treated the
 semantic countermodels as deliberately not records; `/2` added `semanticCountermodel`;
-`/3` adds `standardCalculusIdentity` and `calculusComparison` and flips the Henkin
-calculus's `standardComparison` from `pending` to `recorded`. `/1` and `/2` are
-intentionally retired — the sole consumer pins exact artifact revisions, and no older
-artifact remains referenced.)
+`/3` added `standardCalculusIdentity` and `calculusComparison` and flipped the Henkin
+calculus's `standardComparison` from `pending` to `recorded`; `/4` adds logical
+equality to the pinned standard calculus (the `equalityRules` field — reflexivity and
+substitution, sound against equality-correct structures, an explicit soundness
+hypothesis). `/1`–`/3` are intentionally retired — the sole consumer pins exact
+artifact revisions, and no older artifact remains referenced (`/3` was never consumed
+by a merged importer).)
 Every record carries `"status": "backendChecked"` as emitted; the importer
 may downgrade (see *Trust*).
 
@@ -100,7 +103,8 @@ may downgrade (see *Trust*).
   "derivability": "RMFoundationBridge.StdLKProvable",
   "soundness": "RMFoundationBridge.StdLKProvable.soundness",
   "sortAssumption": "nonemptySetSort",
-  "source": "[Sim09] §I.2 (assumed two-sorted logic, nonempty sorts; bridge-defined LK presentation at the pinned Foundation rule shape, variable-witness ∃² rule)" }
+  "equalityRules": "reflAndSubstitution",
+  "source": "[Sim09] §I.2 (assumed two-sorted logic with equality, nonempty sorts; bridge-defined LK presentation at the pinned Foundation rule shape, variable-witness ∃² rule, equality reflexivity and substitution)" }
 
 { "kind": "calculusComparison",
   "id": "calculus.comparison.l2VarWitnessLK.henkinSafeV1",
@@ -129,16 +133,22 @@ is the bridge-defined, fully specified one-sided LK presentation of the conventi
 two-sorted logic *assumed* (not printed) in Simpson [Sim09] §I.2 — Foundation's pinned
 `Derivation` rule shape verbatim except the variable-witness ∃² rule (Foundation's
 formula-witness `exs₂` builds unrestricted comprehension into the logic and is
-deliberately excluded). `sortAssumption: nonemptySetSort` is the explicit hypothesis
-its theory-level soundness consumes — Simpson's nonempty-sort assumption as data. The
-identification with Simpson's prose is a documented reading, never a checked claim.
+deliberately excluded, and its exclusion from the standard-calculus route is
+audit-gated) plus logical equality (`equalityRules: reflAndSubstitution` — Simpson's
+"usual logical axioms, including equality"). `sortAssumption: nonemptySetSort` and the
+equality-correct-semantics hypothesis (`EqCorrect`: the equality symbol means
+identity) are the explicit hypotheses its theory-level soundness consumes — Simpson's
+assumptions as data. The identification with Simpson's prose is a documented reading,
+never a checked claim.
 
 **`calculusComparison`** types the exact relation between the two calculi:
-`independentDirectSoundness` — both separately sound over `Struc₂` semantics (the
+`independentDirectSoundness` — both independently sound over `Struc₂` semantics (the
 Henkin-safe calculus for every designated part, the pinned standard calculus for
-nonempty parts), **no embedding in either direction** (the standard calculus proves
-`∃X ⊤` outright; the Henkin-safe calculus cannot). The record deliberately has no
-embedding field; nothing in it licenses transferring derivability between calculi.
+nonempty equality-correct parts). **The record carries no embedding and licenses no
+derivability transfer in either direction.** The checked ∃X⊤ contrast refutes the
+identity-preserving embedding of the standard calculus into the Henkin-safe one; no
+claim is made about the reverse direction. The record deliberately has no embedding
+field.
 
 **Typed record references**: `calculusRecord` and `sentenceAdapter` are record ids in
 this file, not correlate strings. The importer verifies referential integrity: the
