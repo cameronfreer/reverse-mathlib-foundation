@@ -75,10 +75,30 @@ about formal RCA₀ — without moving a line of either frozen codebase.
   formula-witness rule (comprehension built into the logic) is deliberately not used.
 - `soundness` / `soundness_sentence`: sound for **every** `Struc₂ ℒₒᵣ` — arbitrary
   domain, interpretation, and designated second-order part.
-- `rca0_not_derives_wkl`: `Rca0Theory ⊬ wklSentence` **in this calculus**.
-  *Proof-system-adequacy debt, recorded*: `Derivable` is not yet proved equivalent to
-  any pinned standard proof system, so this never renders as an unqualified
-  Simpson-style RCA₀ ⊬ WKL. No completeness claim is made anywhere.
+- `rca0_not_derives_wkl`: `Rca0Theory ⊬ wklSentence` **in this calculus**; it never
+  renders as an unqualified Simpson-style RCA₀ ⊬ WKL. No completeness claim is made
+  anywhere.
+
+**F3 (continued) — the pinned standard calculus `l2VarWitnessLK.v1`.**
+
+- `StdLK` (`StandardCalculus.lean`): a bridge-defined, fully specified one-sided LK
+  presentation of the conventional two-sorted logic *assumed* (not printed) in Simpson
+  [Sim09] §I.2 — Foundation's pinned `Derivation` rule shape verbatim, except the
+  second-order existential rule witnesses a **set variable** (the only set terms L₂
+  has), never a formula: Foundation's formula-witness `exs₂` builds unrestricted
+  comprehension into the logic and is deliberately excluded. The identification with
+  Simpson's prose is a documented reading, never a checked claim.
+- `StdLK.soundness` / `StdLKProvable.soundness`: **direct** soundness (no embedding
+  into `Derivable`, no completeness). The theory-level form consumes
+  `M.sets.Nonempty` — Simpson's nonempty-sort assumption as an explicit hypothesis.
+  The deliberate contrast is checked: `stdLK_derives_exs₂_verum` proves `∃X ⊤`
+  outright, which `Derivable` cannot (it is sound for empty designated parts).
+- `rca0_not_stdLK_proves_wkl` (`StandardTurnstile.lean`):
+  `Rca0Theory ⊬ wklSentence` **in `l2VarWitnessLK.v1`** — direct soundness at the REC
+  structure (designated part nonempty) refuted through the Kleene tree. This
+  discharges the previously recorded proof-system-adequacy debt by the direct-
+  soundness route; the two calculi remain **independently** sound with no embedding
+  claimed in either direction.
 
 **F2 — exact EFILC and one-sided Hall adapters, and ideal-level transfers.**
 
@@ -96,17 +116,24 @@ about formal RCA₀ — without moving a line of either frozen codebase.
 `RMFoundationBridge/ExportSurface.lean` is the only export contract: **typed** records
 (`ContextRealizationCertificate` — direction `forward`, status `realizationOnly`;
 three `StatementAdapterCertificate`s — `unconditional`; `CalculusRecord` — id
-`henkinSafeV1`, comparison `pending`; `NonderivabilityCertificate` — structurally
+`henkinSafeV1`, comparison `recorded`; `NonderivabilityCertificate` — structurally
 keyed to the calculus id; `SemanticCountermodelCertificate` — scope `allModels` over
-general `Struc₂` structures, witnessed by an ω-structure). Downstream consumers cite
-these records and nothing else.
+general `Struc₂` structures, witnessed by an ω-structure; `StandardCalculusRecord` —
+id `l2VarWitnessLKv1` with its `nonemptySetSort` assumption;
+`CalculusComparisonCertificate` — relation `independentDirectSoundness`, deliberately
+embedding-free; `StandardNonprovabilityCertificate` — keyed to the standard calculus
+id). Downstream consumers cite these records and nothing else.
 
 The reverse-mathlib **local certified facts** are unaffected by anything here —
 adequacy evidence upgrades interpretation status, not another mathematical leaf. The
 one exception is explicit and labeled: the validated semantic-countermodel record
 contributes reverse-mathlib's backend-qualified all-model scoped result
 (`all-model: 1 (backendChecked)`), the exact statement `Rca0Theory ⊭ wklSentence`
-over all general L₂ structures — never an unqualified conventional-RCA₀ claim.
+over all general L₂ structures — never an unqualified conventional-RCA₀ claim; and
+the validated standard-calculus nonderivability record contributes the
+backend-qualified syntactic scoped result (`syntactic: 1 (backendChecked)`), the
+exact statement `Rca0Theory ⊬ wklSentence in l2VarWitnessLK.v1` — likewise never an
+unqualified conventional-RCA₀ ⊬ WKL claim.
 
 ## Verification
 

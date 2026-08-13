@@ -7,7 +7,7 @@ import RMFoundationBridge
 import RMFoundationBridgeMeta
 
 /-!
-# The backend-evidence emitter: `rmlib-bridge-evidence/2`
+# The backend-evidence emitter: `rmlib-bridge-evidence/3`
 
 Run via `BRIDGE_EXPORT_REVISION=<40-hex> lake env lean scripts/EmitEvidence.lean`;
 writes `evidence/rmlib-bridge-evidence.json` deterministically (fixed field order, no
@@ -45,9 +45,17 @@ def adapterStatusTag : AdapterStatus → String
 
 def calculusIdTag : BridgeCalculusId → String
   | .henkinSafeV1 => "henkinSafeV1"
+  | .l2VarWitnessLKv1 => "l2VarWitnessLK.v1"
 
 def comparisonTag : CalculusComparisonStatus → String
   | .pending => "pending"
+  | .recorded => "recorded"
+
+def sortAssumptionTag : SortAssumptionTag → String
+  | .nonemptySetSort => "nonemptySetSort"
+
+def relationTag : CalculusRelationTag → String
+  | .independentDirectSoundness => "independentDirectSoundness"
 
 def scopeTag : SemanticScopeTag → String
   | .allModels => "allModels"
@@ -173,9 +181,37 @@ open EmitEvidence in
        ("scope", scopeTag wklCountermodelExport.scope),
        ("modelClass", modelClassTag wklCountermodelExport.modelClass),
        ("witnessProvenance", "omegaStructure"),
-       ("witnessBase", "ReverseMathlib.Omega.recursivePart")]]
+       ("witnessBase", "ReverseMathlib.Omega.recursivePart")],
+    Json.mkObj
+      [("kind", "standardCalculusIdentity"),
+       ("id", "calculus.l2VarWitnessLK.v1"),
+       ("status", "backendChecked"),
+       ("export", "RMFoundationBridge.stdCalculusExport"),
+       ("calculusId", calculusIdTag stdCalculusExport.id),
+       ("derivability", "RMFoundationBridge.StdLKProvable"),
+       ("soundness", "RMFoundationBridge.StdLKProvable.soundness"),
+       ("sortAssumption", sortAssumptionTag stdCalculusExport.sortAssumption),
+       ("source", "[Sim09] §I.2 (assumed two-sorted logic, nonempty sorts; bridge-defined LK presentation at the pinned Foundation rule shape, variable-witness ∃² rule)")],
+    Json.mkObj
+      [("kind", "calculusComparison"),
+       ("id", "calculus.comparison.l2VarWitnessLK.henkinSafeV1"),
+       ("status", "backendChecked"),
+       ("export", "RMFoundationBridge.calculusComparisonExport"),
+       ("standardCalculusRecord", "calculus.l2VarWitnessLK.v1"),
+       ("comparedCalculusRecord", "calculus.henkinSafeV1"),
+       ("relation", relationTag calculusComparisonExport.relation)],
+    Json.mkObj
+      [("kind", "calculusNonderivability"),
+       ("id", "nonderivability.rca0.wkl.l2VarWitnessLK.v1"),
+       ("status", "backendChecked"),
+       ("export", "RMFoundationBridge.wklStandardNonprovabilityExport"),
+       ("theorem", "RMFoundationBridge.rca0_not_stdLK_proves_wkl"),
+       ("calculusRecord", "calculus.l2VarWitnessLK.v1"),
+       ("sentenceAdapter", "adapter.wkl.binaryTree.foundationL2"),
+       ("theory", "RMFoundationBridge.Rca0Theory"),
+       ("sentence", "RMFoundationBridge.wklSentence")]]
   let out := Json.mkObj
-    [("schema", "rmlib-bridge-evidence/2"),
+    [("schema", "rmlib-bridge-evidence/3"),
      ("fingerprintSchema", "lean-interface-expr/1"),
      ("source", Json.mkObj
        [("repository", "cameronfreer/reverse-mathlib-foundation"),

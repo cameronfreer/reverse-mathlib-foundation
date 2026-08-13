@@ -1,4 +1,4 @@
-# Backend-evidence interchange: `rmlib-bridge-evidence/2`
+# Backend-evidence interchange: `rmlib-bridge-evidence/3`
 
 The versioned canonical JSON contract by which reverse-mathlib ingests this bridge's
 export surface as **backend evidence** — its own evidence family, stored apart from
@@ -10,7 +10,7 @@ importer lands.
 ## Envelope
 
 ```json
-{ "schema": "rmlib-bridge-evidence/2",
+{ "schema": "rmlib-bridge-evidence/3",
   "fingerprintSchema": "lean-interface-expr/1",
   "source": {
     "repository": "cameronfreer/reverse-mathlib-foundation",
@@ -50,9 +50,12 @@ they are not recoverable from the typed records alone.
 
 ## Record kinds
 
-Five kinds, one record per typed export. (Schema `/1` had four kinds and treated the
-semantic countermodels as deliberately not records; `/1` is intentionally retired — the
-sole consumer pins exact artifact revisions, and no `/1` artifact remains referenced.)
+Seven kinds, one record per typed export. (Schema `/1` had four kinds and treated the
+semantic countermodels as deliberately not records; `/2` added `semanticCountermodel`;
+`/3` adds `standardCalculusIdentity` and `calculusComparison` and flips the Henkin
+calculus's `standardComparison` from `pending` to `recorded`. `/1` and `/2` are
+intentionally retired — the sole consumer pins exact artifact revisions, and no older
+artifact remains referenced.)
 Every record carries `"status": "backendChecked"` as emitted; the importer
 may downgrade (see *Trust*).
 
@@ -88,7 +91,24 @@ may downgrade (see *Trust*).
   "calculusId": "henkinSafeV1",
   "derivability": "RMFoundationBridge.Derivable",
   "soundness": "RMFoundationBridge.soundness_sentence",
-  "standardComparison": "pending" }
+  "standardComparison": "recorded" }
+
+{ "kind": "standardCalculusIdentity", "id": "calculus.l2VarWitnessLK.v1",
+  "status": "backendChecked",
+  "export": "RMFoundationBridge.stdCalculusExport",
+  "calculusId": "l2VarWitnessLK.v1",
+  "derivability": "RMFoundationBridge.StdLKProvable",
+  "soundness": "RMFoundationBridge.StdLKProvable.soundness",
+  "sortAssumption": "nonemptySetSort",
+  "source": "[Sim09] §I.2 (assumed two-sorted logic, nonempty sorts; bridge-defined LK presentation at the pinned Foundation rule shape, variable-witness ∃² rule)" }
+
+{ "kind": "calculusComparison",
+  "id": "calculus.comparison.l2VarWitnessLK.henkinSafeV1",
+  "status": "backendChecked",
+  "export": "RMFoundationBridge.calculusComparisonExport",
+  "standardCalculusRecord": "calculus.l2VarWitnessLK.v1",
+  "comparedCalculusRecord": "calculus.henkinSafeV1",
+  "relation": "independentDirectSoundness" }
 
 { "kind": "calculusNonderivability", "id": "nonderivability.rca0.wkl.henkinSafeV1",
   "status": "backendChecked",
@@ -98,7 +118,27 @@ may downgrade (see *Trust*).
   "sentenceAdapter": "adapter.wkl.binaryTree.foundationL2",
   "theory": "RMFoundationBridge.Rca0Theory",
   "sentence": "RMFoundationBridge.wklSentence" }
+// likewise nonderivability.rca0.wkl.l2VarWitnessLK.v1 with
+//   theorem RMFoundationBridge.rca0_not_stdLK_proves_wkl and
+//   calculusRecord calculus.l2VarWitnessLK.v1 — a calculusNonderivability's
+//   calculusRecord may reference either calculus kind
 ```
+
+**`standardCalculusIdentity`** pins the standard calculus exactly: `l2VarWitnessLK.v1`
+is the bridge-defined, fully specified one-sided LK presentation of the conventional
+two-sorted logic *assumed* (not printed) in Simpson [Sim09] §I.2 — Foundation's pinned
+`Derivation` rule shape verbatim except the variable-witness ∃² rule (Foundation's
+formula-witness `exs₂` builds unrestricted comprehension into the logic and is
+deliberately excluded). `sortAssumption: nonemptySetSort` is the explicit hypothesis
+its theory-level soundness consumes — Simpson's nonempty-sort assumption as data. The
+identification with Simpson's prose is a documented reading, never a checked claim.
+
+**`calculusComparison`** types the exact relation between the two calculi:
+`independentDirectSoundness` — both separately sound over `Struc₂` semantics (the
+Henkin-safe calculus for every designated part, the pinned standard calculus for
+nonempty parts), **no embedding in either direction** (the standard calculus proves
+`∃X ⊤` outright; the Henkin-safe calculus cannot). The record deliberately has no
+embedding field; nothing in it licenses transferring derivability between calculi.
 
 **Typed record references**: `calculusRecord` and `sentenceAdapter` are record ids in
 this file, not correlate strings. The importer verifies referential integrity: the
@@ -211,10 +251,15 @@ before ingestion is wired):
   graph with typed node and edge meanings is designed.
 - A `realizationOnly` record licenses per-ideal ω-model readings only; renderers must
   never present positive ω-facts as unrestricted semantic RCA₀ claims.
-- The nonderivability record renders solely as
-  `Rca0Theory ⊬ wklSentence in henkinSafeV1 (standard-calculus comparison pending)`,
-  generated from the typed `calculusId` and `standardComparison` fields — the
-  qualifier cannot be dropped without changing the data.
+- Each nonderivability record renders solely with its calculus qualifier:
+  `Rca0Theory ⊬ wklSentence in henkinSafeV1` and
+  `Rca0Theory ⊬ wklSentence in l2VarWitnessLK.v1 — backend checked`, generated from
+  the typed `calculusId` fields — the qualifier cannot be dropped without changing
+  the data, and neither ever renders as unqualified conventional RCA₀ ⊬ WKL.
+- Only the `l2VarWitnessLK.v1` nonderivability record may contribute to the
+  consumer's explicitly backend-qualified syntactic scoped-results scoreboard (its
+  typed qualifier is the calculus identifier); the `henkinSafeV1` record stays a
+  backend record only.
 
 
 ### `semanticCountermodel`

@@ -76,6 +76,24 @@ def gates : List Gate :=
      forbidden := derivedOnly },
    { headline := ``RMFoundationBridge.wklCountermodelExport
      required := [``RMFoundationBridge.rca0_not_semantically_implies_wkl]
+     forbidden := derivedOnly },
+   -- The pinned standard calculus: its own direct soundness, never through the
+   -- Henkin-safe calculus's derivability (no embedding exists to route through).
+   { headline := ``RMFoundationBridge.rca0_not_stdLK_proves_wkl
+     required := [``RMFoundationBridge.StdLK.soundness,
+       ``RMFoundationBridge.forward_adequacy,
+       ``RMFoundationBridge.models_wklSentence_iff,
+       ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart] },
+   { headline := ``RMFoundationBridge.stdCalculusExport
+     required := [``RMFoundationBridge.StdLK.soundness]
+     forbidden := derivedOnly },
+   { headline := ``RMFoundationBridge.calculusComparisonExport
+     required := [``RMFoundationBridge.StdLK.soundness,
+       ``RMFoundationBridge.soundness]
+     forbidden := derivedOnly },
+   { headline := ``RMFoundationBridge.wklStandardNonprovabilityExport
+     required := [``RMFoundationBridge.rca0_not_stdLK_proves_wkl,
+       ``RMFoundationBridge.StdLK.soundness]
      forbidden := derivedOnly }]
 
 /-- Transitive constant closure over types and values (fail-open on missing constants
