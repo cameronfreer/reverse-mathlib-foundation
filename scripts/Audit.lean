@@ -85,7 +85,8 @@ def gates : List Gate :=
      required := [``RMFoundationBridge.rca0_not_semantically_implies_wkl]
      forbidden := derivedOnly },
    -- The pinned standard calculus: its own direct soundness, never through the
-   -- Henkin-safe calculus's derivability (no embedding exists to route through).
+   -- Henkin-safe calculus's derivability (no record carries an embedding or licenses
+   -- a derivability transfer between the calculi).
    { headline := ``RMFoundationBridge.rca0_not_stdLK_proves_wkl
      required := [``RMFoundationBridge.StdLK.soundness,
        ``RMFoundationBridge.forward_adequacy,

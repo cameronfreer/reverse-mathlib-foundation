@@ -25,7 +25,8 @@ Prop-valued (only soundness is consumed downstream); the rules are otherwise ver
 over Foundation's own `Sequent`/`Semiproposition` syntax.
 
 **Direct soundness, no embedding, no completeness.** `soundness` proves: a derivable
-sequent has a true member in **every** `Struc₂ ℒₒᵣ` under every assignment of the free
+sequent has a true member in **every equality-correct** `Struc₂ ℒₒᵣ` (`EqCorrect`:
+the equality symbol means identity) under every assignment of the free
 number variables to the domain and of the free set variables to the designated
 second-order part. The theory-level corollary `soundness_provable` needs the designated
 part **nonempty** — exactly Simpson's nonempty-sort assumption, surfacing as the
@@ -384,8 +385,9 @@ theorem stdLK_derives_exs₂_verum :
 
 /-! ### Soundness -/
 
-/-- **Direct soundness of the pinned standard calculus** — for every second-order
-structure, arbitrary designated part: a derivable sequent has a true member under every
+/-- **Direct soundness of the pinned standard calculus** — for every
+**equality-correct** second-order structure (`EqCorrect`), arbitrary designated part:
+a derivable sequent has a true member under every
 assignment of free set variables **into the designated part** and free number variables
 into the domain. Nonemptiness of the part is not needed here (it is needed to *produce*
 an assignment, in `soundness_provable`); no completeness claim is made anywhere. -/
