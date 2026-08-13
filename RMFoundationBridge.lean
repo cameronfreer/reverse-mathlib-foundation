@@ -21,6 +21,8 @@ import RMFoundationBridge.WklSentence
 import RMFoundationBridge.WklRegression
 import RMFoundationBridge.HenkinCalculus
 import RMFoundationBridge.Turnstile
+import RMFoundationBridge.StandardCalculus
+import RMFoundationBridge.StandardTurnstile
 import RMFoundationBridge.GraphPredicates
 import RMFoundationBridge.EfilcSentence
 import RMFoundationBridge.HallSentence
