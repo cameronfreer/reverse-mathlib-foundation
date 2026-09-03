@@ -176,5 +176,6 @@ two revisions.
   (`905b958`). `IsTuringIdeal` and `joinSet` byte-identical; the only change to
   `Omega/Computability.lean` is a docstring sentence. New modules consumed downstream:
   `Omega/OracleCode.lean` (`OracleCode`, `eval`, `evaln`, `evaln_bound`, `evaln_sound`,
-  `evaln_complete`, `exists_code`, `evaln_table`) and `Omega/Jump.lean`. Bridge built
-  unchanged; audit, fingerprint fixtures, and emission determinism all pass.
+  `evaln_complete`, `exists_code`, `evaln_table`), the target of the downward-closure
+  arithmetization. Bridge built unchanged; audit, fingerprint fixtures, and emission
+  determinism all pass.

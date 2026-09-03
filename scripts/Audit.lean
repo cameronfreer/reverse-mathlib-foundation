@@ -62,6 +62,11 @@ def gates : List Gate :=
      required := [``RMFoundationBridge.models_comprehensionInstance_iff,
        ``RMFoundationBridge.falsumComprehension_mem_theory]
      forbidden := forwardRoute },
+   { headline := ``RMFoundationBridge.nonempty_of_models_rca0
+     required := [``RMFoundationBridge.empty_mem_of_models_rca0,
+       ``RMFoundationBridge.models_comprehensionInstance_iff,
+       ``RMFoundationBridge.falsumComprehension_mem_theory]
+     forbidden := forwardRoute },
    { headline := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
      required := [``RMFoundationBridge.forward_adequacy,
        ``RMFoundationBridge.models_wklSentence_iff,
