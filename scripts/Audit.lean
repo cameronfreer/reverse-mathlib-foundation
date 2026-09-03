@@ -44,8 +44,25 @@ definition. -/
 def formulaWitness : List Name :=
   [``LO.SecondOrder.Derivation.exs₂]
 
+/-- The converse-adequacy slices must recover ideal clauses from **satisfaction of the
+theory**, never by routing through the forward direction or the ideal hypothesis. -/
+def forwardRoute : List Name :=
+  [``RMFoundationBridge.forward_adequacy,
+   ``RMFoundationBridge.comprehension_internal,
+   ``ReverseMathlib.Omega.IsTuringIdeal]
+
 def gates : List Gate :=
-  [{ headline := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
+  [{ headline := ``RMFoundationBridge.joinSet_mem_of_models_rca0
+     required := [``RMFoundationBridge.models_comprehensionInstance_iff,
+       ``RMFoundationBridge.joinComprehension_mem_theory,
+       ``RMFoundationBridge.evalN_joinMatrix,
+       ``ReverseMathlib.Omega.joinSet]
+     forbidden := forwardRoute },
+   { headline := ``RMFoundationBridge.empty_mem_of_models_rca0
+     required := [``RMFoundationBridge.models_comprehensionInstance_iff,
+       ``RMFoundationBridge.falsumComprehension_mem_theory]
+     forbidden := forwardRoute },
+   { headline := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
      required := [``RMFoundationBridge.forward_adequacy,
        ``RMFoundationBridge.models_wklSentence_iff,
        ``ReverseMathlib.Omega.not_weakKonigAt_recursivePart] },

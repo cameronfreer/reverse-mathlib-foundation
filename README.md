@@ -105,6 +105,20 @@ about formal RCA₀ — without moving a line of either frozen codebase.
   soundness route; the two calculi remain **independently** sound, and no record
   carries or licenses a derivability transfer between them.
 
+**Converse adequacy, Slice A — the structural ideal clauses from the theory.**
+`ConverseStructural.lean` starts the converse of `forward_adequacy` (every canonical
+ω-structure satisfying `Rca0Theory` is a Turing ideal) with the two clauses that need no
+arithmetization of computation: `empty_mem_of_models_rca0` / `nonempty_of_models_rca0`
+(comprehension on `⊥`) and `joinSet_mem_of_models_rca0` (comprehension on the bounded
+matrix `∃ y < x+1, (x = 2y ∧ y ∈ A) ∨ (x = 2y+1 ∧ y ∈ B)`). The coding correspondence
+with reverse-mathlib's exact `joinSet` — defined through `% 2` and `/ 2` — is the
+explicit agreement lemma `evalN_joinMatrix`, never left implicit. Both theorems are
+audit-gated to reach `models_comprehensionInstance_iff` and their comprehension axiom and
+to reach **neither** `forward_adequacy`, `comprehension_internal`, nor `IsTuringIdeal`.
+Bridge-local: nothing is exported or ingested, and no partial context-adequacy claim is
+made — the downward-closure clause (a Σ⁰₁ definition of oracle computation with the
+oracle as a set parameter) is the subject of the following slices.
+
 **F2 — exact EFILC and one-sided Hall adapters, and ideal-level transfers.**
 
 - `efilcSentence` / `models_efilcSentence_iff` and `hallSentence` /

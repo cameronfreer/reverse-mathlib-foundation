@@ -15,6 +15,7 @@ import RMFoundationBridge.Delta0Recursive
 import RMFoundationBridge.Sigma01Stage
 import RMFoundationBridge.Delta01Decide
 import RMFoundationBridge.ForwardAdequacy
+import RMFoundationBridge.ConverseStructural
 import RMFoundationBridge.SeqArith
 import RMFoundationBridge.TreePredicates
 import RMFoundationBridge.WklSentence
