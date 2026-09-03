@@ -119,6 +119,19 @@ Bridge-local: nothing is exported or ingested, and no partial context-adequacy c
 made — the downward-closure clause (a Σ⁰₁ definition of oracle computation with the
 oracle as a set parameter) is the subject of the following slices.
 
+**Converse adequacy, Slice B — the classified Δ⁰₀ sequence-arithmetic toolkit.**
+`BoundedSeqArith.lean` re-supplies `SeqArith`'s coding operations inside the strict
+hierarchy, without changing `SeqArith`'s contract: each of `pairCode`, `modCode`,
+`divCode`, `fstCode`, `sndCode`, `betaCode` is a `Delta0Code` (so its translation is
+Δ⁰₀ by `toFormula_isDelta0`), each formerly unbounded witness carries an explicit term
+bound with a plain-ℕ **bound-sufficiency** theorem (`mod_bounded_char`: the quotient is
+below `w + 1`; `div_bounded_char`: the remainder is below `m`; `fst_bounded_char` /
+`snd_bounded_char` / `beta_bounded_char`: both unpairing components are below `s + 1`),
+and each has an unconditional standard-ℕ agreement theorem (`evalN_betaCode` etc.).
+Code-level rewriting (`Delta0Code.rew`, `toFormula_rew`, `Delta0Code.app₃`) lets codes
+compose through the same substitution combinator as formulas while staying codes.
+Nothing here mentions `OmegaPart`, `OracleCode`, or any ideal premise.
+
 **F2 — exact EFILC and one-sided Hall adapters, and ideal-level transfers.**
 
 - `efilcSentence` / `models_efilcSentence_iff` and `hallSentence` /
