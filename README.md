@@ -149,3 +149,18 @@ unqualified conventional-RCA₀ ⊬ WKL claim.
   dependencies, and no export leaf may reach the derived composition.
 
 Both run in CI on every push.
+
+### Dependency pins
+
+The reverse-mathlib revision is part of every proof's provenance here: the bridge
+consumes `IsTuringIdeal`, `joinSet`, and (from the ω-context adequacy work onward)
+the exact `OracleCode` / `evaln` encoding. Pin moves are standalone commits that
+rebuild the unchanged bridge and record what the consumed interfaces did between the
+two revisions.
+
+- `cf2b730` → `d783b5c` (2026-09-03). Same toolchain (v4.32.2) and same mathlib
+  (`905b958`). `IsTuringIdeal` and `joinSet` byte-identical; the only change to
+  `Omega/Computability.lean` is a docstring sentence. New modules consumed downstream:
+  `Omega/OracleCode.lean` (`OracleCode`, `eval`, `evaln`, `evaln_bound`, `evaln_sound`,
+  `evaln_complete`, `exists_code`, `evaln_table`) and `Omega/Jump.lean`. Bridge built
+  unchanged; audit, fingerprint fixtures, and emission determinism all pass.

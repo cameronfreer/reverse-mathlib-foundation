@@ -22,7 +22,7 @@ rev = "9800e78127294798496adc6e37c8b9ded637d93a"
 [[require]]
 name = "reverse-mathlib"
 git = "https://github.com/cameronfreer/reverse-mathlib"
-rev = "cf2b730a957ee151f4d6975dafec1c5bfcb99fcd"
+rev = "d783b5cc4c7ced65e3e585d931f7e8643edbac1b"
 
 [[lean_lib]]
 name = "RMFoundationBridge"
