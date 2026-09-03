@@ -1,9 +1,9 @@
 {"source":
  {"toolchain": "leanprover/lean4:v4.32.2",
-  "revision": "ffcebe521227125582ea93768cecfa5de0d8beab",
+  "revision": "37ac45a8dc375f89b20448bc27947a91a71c88c2",
   "repository": "cameronfreer/reverse-mathlib-foundation",
   "dependencies":
-  {"reverse-mathlib": "cf2b730a957ee151f4d6975dafec1c5bfcb99fcd",
+  {"reverse-mathlib": "d783b5cc4c7ced65e3e585d931f7e8643edbac1b",
    "mathlib": "905b95818eb32af7874a58b427f50c1711a5e96c",
    "Foundation": "9800e78127294798496adc6e37c8b9ded637d93a"}},
  "schema": "rmlib-bridge-evidence/4",
