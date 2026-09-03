@@ -105,6 +105,20 @@ about formal RCA₀ — without moving a line of either frozen codebase.
   soundness route; the two calculi remain **independently** sound, and no record
   carries or licenses a derivability transfer between them.
 
+**Converse adequacy, Slice A — the structural ideal clauses from the theory.**
+`ConverseStructural.lean` starts the converse of `forward_adequacy` (every canonical
+ω-structure satisfying `Rca0Theory` is a Turing ideal) with the two clauses that need no
+arithmetization of computation: `empty_mem_of_models_rca0` / `nonempty_of_models_rca0`
+(comprehension on `⊥`) and `joinSet_mem_of_models_rca0` (comprehension on the bounded
+matrix `∃ y < x+1, (x = 2y ∧ y ∈ A) ∨ (x = 2y+1 ∧ y ∈ B)`). The coding correspondence
+with reverse-mathlib's exact `joinSet` — defined through `% 2` and `/ 2` — is the
+explicit agreement lemma `evalN_joinMatrix`, never left implicit. Both theorems are
+audit-gated to reach `models_comprehensionInstance_iff` and their comprehension axiom and
+to reach **neither** `forward_adequacy`, `comprehension_internal`, nor `IsTuringIdeal`.
+Bridge-local: nothing is exported or ingested, and no partial context-adequacy claim is
+made — the downward-closure clause (a Σ⁰₁ definition of oracle computation with the
+oracle as a set parameter) is the subject of the following slices.
+
 **F2 — exact EFILC and one-sided Hall adapters, and ideal-level transfers.**
 
 - `efilcSentence` / `models_efilcSentence_iff` and `hallSentence` /
@@ -149,3 +163,19 @@ unqualified conventional-RCA₀ ⊬ WKL claim.
   dependencies, and no export leaf may reach the derived composition.
 
 Both run in CI on every push.
+
+### Dependency pins
+
+The reverse-mathlib revision is part of every proof's provenance here: the bridge
+consumes `IsTuringIdeal`, `joinSet`, and (from the ω-context adequacy work onward)
+the exact `OracleCode` / `evaln` encoding. Pin moves are standalone commits that
+rebuild the unchanged bridge and record what the consumed interfaces did between the
+two revisions.
+
+- `cf2b730` → `d783b5c` (2026-09-03). Same toolchain (v4.32.2) and same mathlib
+  (`905b958`). `IsTuringIdeal` and `joinSet` byte-identical; the only change to
+  `Omega/Computability.lean` is a docstring sentence. New modules consumed downstream:
+  `Omega/OracleCode.lean` (`OracleCode`, `eval`, `evaln`, `evaln_bound`, `evaln_sound`,
+  `evaln_complete`, `exists_code`, `evaln_table`), the target of the downward-closure
+  arithmetization. Bridge built unchanged; audit, fingerprint fixtures, and emission
+  determinism all pass.
