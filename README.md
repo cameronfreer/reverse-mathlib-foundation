@@ -132,6 +132,23 @@ Code-level rewriting (`Delta0Code.rew`, `toFormula_rew`, `Delta0Code.app₃`) le
 compose through the same substitution combinator as formulas while staying codes.
 Nothing here mentions `OmegaPart`, `OracleCode`, or any ideal premise.
 
+**Converse adequacy, Slice C1 — semantic computation transcripts.**
+`OracleTranscript.lean` is the purely semantic half of the downward-closure clause: a
+transcript is a list of entries `(fuel, code, input, output)`, each asserting
+`evaln (oracleOf B) fuel (ofNatCode code) input = some output` about the **frozen**
+step-bounded evaluator, and it is *verified* when every entry is justified by entries at
+strictly earlier indices with exactly the evaluator's recursive shape (`Clause`): fuel
+stored as a witnessed `k + 1` with the guard `input ≤ k`; `pair`/`comp` subcalls, the
+`prec` base and step-code call, and the `rfind'` test at fuel `k + 1`; the `prec`
+self-call and the `rfind'` continuation at the predecessor `k`. The single point of
+contact with the frozen definition is `evaln_succ_iff_clause`. Principal theorems:
+`verified_sound`, `verified_complete` (by structural recursion on the code inside an
+induction on fuel, concatenating sub-transcripts through `Verified.append`/`snoc`), and
+`verified_deterministic` (soundness plus `evaln_mono`). The oracle is the bridge-local
+`oracleOf B` with `charFn B = ↑(oracleOf B)`; `Omega/Jump.lean` is not imported, and the
+audit forbids its `charFnTot` on every transcript headline. No syntax, no `OmegaPart`,
+and the reduced set `A` never appears.
+
 **F2 — exact EFILC and one-sided Hall adapters, and ideal-level transfers.**
 
 - `efilcSentence` / `models_efilcSentence_iff` and `hallSentence` /

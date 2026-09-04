@@ -51,6 +51,15 @@ def forwardRoute : List Name :=
    ``RMFoundationBridge.comprehension_internal,
    ``ReverseMathlib.Omega.IsTuringIdeal]
 
+/-- The transcript route must consume the frozen evaluator directly: never the jump
+module's totalization (`charFnTot`), never the ideal hypothesis or the forward
+direction. `charFnTot` is named literally: it is absent from this environment precisely
+because `Omega/Jump.lean` is not imported, and the gate arms the moment it appears. -/
+def transcriptForbidden : List Name :=
+  [`ReverseMathlib.Omega.charFnTot,
+   ``ReverseMathlib.Omega.IsTuringIdeal,
+   ``RMFoundationBridge.forward_adequacy]
+
 def gates : List Gate :=
   [{ headline := ``RMFoundationBridge.joinSet_mem_of_models_rca0
      required := [``RMFoundationBridge.models_comprehensionInstance_iff,
@@ -67,6 +76,20 @@ def gates : List Gate :=
        ``RMFoundationBridge.models_comprehensionInstance_iff,
        ``RMFoundationBridge.falsumComprehension_mem_theory]
      forbidden := forwardRoute },
+   { headline := ``RMFoundationBridge.verified_sound
+     required := [``ReverseMathlib.Omega.OracleCode.evaln,
+       ``ReverseMathlib.Omega.OracleCode.ofNatCode,
+       ``RMFoundationBridge.evaln_succ_iff_clause]
+     forbidden := transcriptForbidden },
+   { headline := ``RMFoundationBridge.verified_complete
+     required := [``ReverseMathlib.Omega.OracleCode.evaln,
+       ``RMFoundationBridge.evaln_succ_iff_clause,
+       ``RMFoundationBridge.Verified.append, ``RMFoundationBridge.Verified.snoc]
+     forbidden := transcriptForbidden },
+   { headline := ``RMFoundationBridge.verified_deterministic
+     required := [``RMFoundationBridge.verified_sound,
+       ``ReverseMathlib.Omega.OracleCode.evaln_mono]
+     forbidden := transcriptForbidden },
    { headline := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
      required := [``RMFoundationBridge.forward_adequacy,
        ``RMFoundationBridge.models_wklSentence_iff,
