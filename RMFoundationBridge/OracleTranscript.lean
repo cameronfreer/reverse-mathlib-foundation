@@ -22,8 +22,10 @@ verified transcripts to the frozen `evaln` with no syntax anywhere.
 
 * The oracle is the bridge-local total binary oracle `oracleOf B` (`1` on members, `0`
   off), with `charFn B = ↑(oracleOf B)` proved here; `Omega/Jump.lean` is not imported.
-* An entry stores a **natural** code; its semantic interpretation is
-  `OracleCode.ofNatCode e.code`, stated explicitly in every theorem.
+* An entry stores a **natural** code. The division of responsibility is: soundness
+  interprets the stored natural through `OracleCode.ofNatCode`; completeness stores
+  `encodeCode` of the typed code and relies on the round trip `ofNatCode_encodeCode`
+  (audit-gated) to make that target denote the original code.
 * The stored fuel is the actual fuel `K`. Every justified entry witnesses `K = k + 1`
   and requires `input ≤ k` (the evaluator's guard), so `0 < K` and `input < K` hold. The
   recursive support then reproduces the frozen evaluator exactly: `pair`/`comp` subcalls,
@@ -33,9 +35,11 @@ verified transcripts to the frozen `evaln` with no syntax anywhere.
 * Recursive support must occur at a **strictly earlier index**; duplicates are harmless.
 
 **Principal theorems.** `verified_sound` (every entry of a verified transcript is a true
-`evaln` fact), `verified_complete` (every true `evaln` fact heads some verified
-transcript), and `verified_deterministic` (two verified entries with the same code and
-input agree on the output — a corollary of soundness and `evaln_mono`).
+`evaln` fact), `verified_complete` (every true `evaln` fact occurs in some verified
+transcript — the target is appended last, after its sub-transcripts), and
+`verified_deterministic` (verified entries with the same code and input agree on the
+output, across two transcripts — soundness twice, then `evaln_mono`; the same-transcript
+form is a corollary).
 
 The set `A` being reduced never appears here; only the oracle set `B`.
 -/
@@ -385,8 +389,8 @@ theorem complete_succ {B : Set ℕ} {k : ℕ}
         ⟨y, List.mem_append_left _ hm₁, Or.inr ⟨hy0, List.mem_append_right _ hm₂⟩⟩), mem_snoc _⟩
 
 /-- **Completeness**: every true `evaln` fact about the frozen evaluator, at any fuel,
-heads some verified transcript — its target entry stores that fuel and the encoded
-code. -/
+occurs in some verified transcript — its target entry, appended after the
+sub-transcripts it depends on, stores that fuel and the encoded code. -/
 theorem verified_complete {B : Set ℕ} :
     ∀ (K : ℕ) (c : OracleCode) {n x : ℕ}, OracleCode.evaln (oracleOf B) K c n = some x →
       ∃ L, Verified B L ∧ targetEntry K c n x ∈ L
@@ -395,20 +399,27 @@ theorem verified_complete {B : Set ℕ} :
 
 /-! ### Determinism -/
 
-/-- **Determinism**: two entries of a verified transcript with the same code and input
-have the same output — soundness at both fuels, then `evaln_mono` to their maximum. -/
-theorem verified_deterministic {B : Set ℕ} {L : List Entry} (h : Verified B L)
-    {e₁ e₂ : Entry} (h₁ : e₁ ∈ L) (h₂ : e₂ ∈ L) (hc : e₁.code = e₂.code)
-    (hn : e₁.input = e₂.input) : e₁.output = e₂.output := by
-  have s₁ := verified_sound h h₁
-  have s₂ := verified_sound h h₂
+/-- **Determinism, across transcripts**: entries of two verified transcripts with the
+same code and input have the same output — soundness in each transcript, then
+`evaln_mono` to the larger fuel. -/
+theorem verified_deterministic₂ {B : Set ℕ} {L₁ L₂ : List Entry} (h₁ : Verified B L₁)
+    (h₂ : Verified B L₂) {e₁ e₂ : Entry} (m₁ : e₁ ∈ L₁) (m₂ : e₂ ∈ L₂)
+    (hc : e₁.code = e₂.code) (hn : e₁.input = e₂.input) : e₁.output = e₂.output := by
+  have s₁ := verified_sound h₁ m₁
+  have s₂ := verified_sound h₂ m₂
   rw [hc, hn] at s₁
-  have m₁ : e₁.output ∈ OracleCode.evaln (oracleOf B) (max e₁.fuel e₂.fuel)
+  have k₁ : e₁.output ∈ OracleCode.evaln (oracleOf B) (max e₁.fuel e₂.fuel)
       (OracleCode.ofNatCode e₂.code) e₂.input :=
     OracleCode.evaln_mono (le_max_left _ _) s₁
-  have m₂ : e₂.output ∈ OracleCode.evaln (oracleOf B) (max e₁.fuel e₂.fuel)
+  have k₂ : e₂.output ∈ OracleCode.evaln (oracleOf B) (max e₁.fuel e₂.fuel)
       (OracleCode.ofNatCode e₂.code) e₂.input :=
     OracleCode.evaln_mono (le_max_right _ _) s₂
-  exact Option.mem_unique m₁ m₂
+  exact Option.mem_unique k₁ k₂
+
+/-- **Determinism within one transcript**, as a corollary. -/
+theorem verified_deterministic {B : Set ℕ} {L : List Entry} (h : Verified B L)
+    {e₁ e₂ : Entry} (h₁ : e₁ ∈ L) (h₂ : e₂ ∈ L) (hc : e₁.code = e₂.code)
+    (hn : e₁.input = e₂.input) : e₁.output = e₂.output :=
+  verified_deterministic₂ h h h₁ h₂ hc hn
 
 end RMFoundationBridge

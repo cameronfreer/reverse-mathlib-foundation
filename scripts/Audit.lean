@@ -84,11 +84,15 @@ def gates : List Gate :=
    { headline := ``RMFoundationBridge.verified_complete
      required := [``ReverseMathlib.Omega.OracleCode.evaln,
        ``RMFoundationBridge.evaln_succ_iff_clause,
+       ``RMFoundationBridge.ofNatCode_encodeCode,
        ``RMFoundationBridge.Verified.append, ``RMFoundationBridge.Verified.snoc]
      forbidden := transcriptForbidden },
-   { headline := ``RMFoundationBridge.verified_deterministic
+   { headline := ``RMFoundationBridge.verified_deterministic₂
      required := [``RMFoundationBridge.verified_sound,
        ``ReverseMathlib.Omega.OracleCode.evaln_mono]
+     forbidden := transcriptForbidden },
+   { headline := ``RMFoundationBridge.verified_deterministic
+     required := [``RMFoundationBridge.verified_deterministic₂]
      forbidden := transcriptForbidden },
    { headline := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
      required := [``RMFoundationBridge.forward_adequacy,

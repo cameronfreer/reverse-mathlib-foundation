@@ -144,7 +144,8 @@ self-call and the `rfind'` continuation at the predecessor `k`. The single point
 contact with the frozen definition is `evaln_succ_iff_clause`. Principal theorems:
 `verified_sound`, `verified_complete` (by structural recursion on the code inside an
 induction on fuel, concatenating sub-transcripts through `Verified.append`/`snoc`), and
-`verified_deterministic` (soundness plus `evaln_mono`). The oracle is the bridge-local
+`verified_deterministic₂` across two transcripts (soundness twice plus `evaln_mono`),
+with the same-transcript form a corollary. The oracle is the bridge-local
 `oracleOf B` with `charFn B = ↑(oracleOf B)`; `Omega/Jump.lean` is not imported, and the
 audit forbids its `charFnTot` on every transcript headline. No syntax, no `OmegaPart`,
 and the reduced set `A` never appears.
