@@ -20,16 +20,20 @@ directions, for every standard-ℕ set domain and assignment.
   by the C1 convention `Entry.ofNat` (`tableOf`).
 * Codes are read arithmetically through `encodeCode`'s literal equations: `0`–`4` are the
   five base constructors, and every `c ≥ 5` is `2·(2·m) + 5` (pair), `2·(2·m + 1) + 5`
-  (comp), `2·(2·m) + 1 + 5` (prec), or `2·(2·m + 1) + 1 + 5` (rfind'), with the two
-  sub-codes the unpairing of `m`. The **constructor-shape theorem** (`codeShape`) is
+  (comp), `2·(2·m) + 1 + 5` (prec), or `2·(2·m + 1) + 1 + 5` (rfind'); for pair, comp,
+  and prec the two sub-codes are the unpairing of `m`, while rfind' uses `m` itself as
+  its sub-code. The **constructor-shape theorem** (`codeShape`) is
   bidirectional and covers **arbitrary** naturals: each falls into exactly one of the nine
   cases, the arithmetic branch agrees with `ofNatCode`, and encoding each constructor
   yields its branch. The formula is the exhaustive nine-way disjunction — never a family
   of implications that a malformed code could satisfy vacuously.
 * Every inner witness carries an explicit bound: entry components by the entry, entries
   by the seed `S` (`Nat.beta S i ≤ S`), the pair witnesses by the pair, the predecessor
-  fuel by the stored fuel. `divCode`/`modCode` are not used; the residue shapes are stated
-  through `2·(2·m) + …` equations with `m` a bounded witness.
+  fuel by the stored fuel. Constructor decoding uses no division or remainder checker:
+  the residue shapes are stated through `2·(2·m) + …` equations with `m` a bounded
+  witness. Reading an entry off the seed goes through `betaCode`, hence through
+  `modCode`'s bounded remainder — always at the positive modulus `(i + 1)·d + 1`, so the
+  toolkit's positive-modulus boundary is respected.
 * The reduced set `A` does not occur in this module.
 -/
 
@@ -138,10 +142,22 @@ theorem codeShape (c : ℕ) : CodeShape c := by
     · rw [show c = 2 * (2 * ((c - 5) / 4) + 1) + 5 by omega]; exact .comp _
     · rw [show c = 2 * (2 * ((c - 5) / 4) + 1) + 1 + 5 by omega]; exact .rfind' _
 
-/-- The composite shapes are pairwise exclusive and determine `m`: a code has exactly one
-shape. -/
-theorem codeShape_unique {m m' : ℕ} :
+/-- **Uniqueness of shape**: the nine shapes are pairwise exclusive and each composite
+form is injective in `m` — every base value is below `5` while every composite value is
+at least `5` (base/composite separation), the four composite forms are pairwise disjoint
+(six cross-exclusions), and each of the four is injective. Together with `codeShape`,
+every natural has exactly one shape with exactly one parameter. (The clause agreement
+handles these facts inline; this theorem names them.) -/
+theorem codeShape_unique (m m' : ℕ) :
+    -- base/composite separation
+    (5 ≤ 2 * (2 * m) + 5 ∧ 5 ≤ 2 * (2 * m + 1) + 5 ∧ 5 ≤ 2 * (2 * m) + 1 + 5 ∧
+      5 ≤ 2 * (2 * m + 1) + 1 + 5) ∧
+    -- injectivity of each composite form
     (2 * (2 * m) + 5 = 2 * (2 * m') + 5 → m = m') ∧
+    (2 * (2 * m + 1) + 5 = 2 * (2 * m' + 1) + 5 → m = m') ∧
+    (2 * (2 * m) + 1 + 5 = 2 * (2 * m') + 1 + 5 → m = m') ∧
+    (2 * (2 * m + 1) + 1 + 5 = 2 * (2 * m' + 1) + 1 + 5 → m = m') ∧
+    -- pairwise disjointness of the composite forms
     (2 * (2 * m) + 5 ≠ 2 * (2 * m' + 1) + 5) ∧ (2 * (2 * m) + 5 ≠ 2 * (2 * m') + 1 + 5) ∧
     (2 * (2 * m) + 5 ≠ 2 * (2 * m' + 1) + 1 + 5) ∧
     (2 * (2 * m + 1) + 5 ≠ 2 * (2 * m') + 1 + 5) ∧
