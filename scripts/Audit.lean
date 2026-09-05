@@ -94,6 +94,18 @@ def gates : List Gate :=
    { headline := ``RMFoundationBridge.verified_deterministic
      required := [``RMFoundationBridge.verified_deterministic₂]
      forbidden := transcriptForbidden },
+   { headline := ``RMFoundationBridge.evalN_verifiedCode
+     required := [``RMFoundationBridge.evalN_clauseCode,
+       ``RMFoundationBridge.evalN_supportsCode,
+       ``RMFoundationBridge.codeShape,
+       ``RMFoundationBridge.ofNatCode_pair_shape, ``RMFoundationBridge.ofNatCode_comp_shape,
+       ``RMFoundationBridge.ofNatCode_prec_shape, ``RMFoundationBridge.ofNatCode_rfind'_shape,
+       ``RMFoundationBridge.Delta0Code.toFormula_rew,
+       ``RMFoundationBridge.Verified, ``RMFoundationBridge.Clause]
+     forbidden := transcriptForbidden },
+   { headline := ``RMFoundationBridge.exists_tableOf
+     required := [``Nat.beta_unbeta_coe, ``RMFoundationBridge.Entry.ofNat_toNat]
+     forbidden := transcriptForbidden },
    { headline := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
      required := [``RMFoundationBridge.forward_adequacy,
        ``RMFoundationBridge.models_wklSentence_iff,

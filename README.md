@@ -150,6 +150,23 @@ with the same-transcript form a corollary. The oracle is the bridge-local
 audit forbids its `charFnTot` on every transcript headline. No syntax, no `OmegaPart`,
 and the reduced set `A` never appears.
 
+**Converse adequacy, Slice C2 — the classified checker and its exact agreement.**
+`OracleTranscriptCode.lean` is the syntactic half: `verifiedCode : Delta0Code 1 1` (one
+set slot for the oracle set `B`, one number slot for the transcript code `T`) whose Tarski
+evaluation is **exactly** `Verified B (tableOf T)` in both directions, for every
+standard-ℕ set domain (`evalN_verifiedCode`); `tableOf T` is precisely the first
+`(unpair T).1` values `Nat.beta (unpair T).2 i` decoded by the C1 convention, and every
+list is some table (`exists_tableOf`, through the checked β agreement at each `i < L`).
+Built in five layers with an agreement theorem each: entry decoder, strictly-earlier
+support, the nine evaluator clauses (`clauseCode`, an exhaustive disjunction), one
+justified entry, the whole transcript. Codes are read arithmetically through
+`encodeCode`'s literal equations; the constructor-shape theorem is bidirectional over
+**arbitrary** naturals (`codeShape`: exactly one of nine shapes; `ofNatCode_*_shape`: the
+arithmetic branch agrees with the decoder; `encodeCode_*`: encoding gives the branch).
+Every inner witness carries an explicit bound. Toolkit additions: numerals (`tNum`),
+arbitrary-arity substitution (`Delta0Code.app` / `evalN_rew_subst`). The reduced set `A`
+does not occur.
+
 **F2 — exact EFILC and one-sided Hall adapters, and ideal-level transfers.**
 
 - `efilcSentence` / `models_efilcSentence_iff` and `hallSentence` /
