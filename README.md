@@ -218,6 +218,8 @@ the other half of Slice D, in reverse-mathlib.
 
 `RMFoundationBridge/ExportSurface.lean` is the only export contract: **typed** records
 (`ContextRealizationCertificate` — direction `forward`, status `realizationOnly`;
+`ContextAdequacyCertificate` — status `equivalence`, presentation
+`canonicalOmegaStructure`, containing the realization record and adding the converse;
 three `StatementAdapterCertificate`s — `unconditional`; `CalculusRecord` — id
 `henkinSafeV1`, comparison `recorded`; `NonderivabilityCertificate` — structurally
 keyed to the calculus id; `SemanticCountermodelCertificate` — scope `allModels` over
