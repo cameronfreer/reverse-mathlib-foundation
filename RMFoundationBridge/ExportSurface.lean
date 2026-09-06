@@ -6,6 +6,7 @@ Authors: Cameron Freer
 import RMFoundationBridge.SentenceTransfer
 import RMFoundationBridge.Turnstile
 import RMFoundationBridge.StandardTurnstile
+import RMFoundationBridge.ConverseAdequacy
 
 /-!
 # The bridge export surface
@@ -21,7 +22,15 @@ Epistemic boundary, restated as types:
 
 * **Context realization is one-way** (`RealizationDirection.forward`,
   `RealizationStatus.realizationOnly`): every Turing ideal realizes semantic RCA₀ on
-  ω-structures. No converse-adequacy claim exists anywhere in the bridge.
+  ω-structures. That record's meaning is unchanged and it is never reinterpreted.
+* **Context adequacy is a separate, additive record**
+  (`ContextAdequacyCertificate`, status `equivalence`, presentation
+  `canonicalOmegaStructure`): it *contains* the forward-realization record and adds the
+  converse — the canonical ω-structures `Ω.toFoundation` satisfying the named theory are
+  exactly the Turing ideals. It identifies the theory with nothing: axiomatization
+  faithfulness to conventional RCA₀ remains a separate obligation, and no Henkin or
+  nonstandard transport, derivability claim, or reinterpretation of the
+  calculus-relative nonderivability follows from it.
 * **Statement adapters are unconditional** (`AdapterStatus.unconditional`): each ties
   one closed sentence to one frozen capability, for arbitrary `Ω`.
 * **The Henkin-safe calculus is bridge-local** (`BridgeCalculusId.henkinSafeV1`); the
@@ -66,6 +75,19 @@ inductive RealizationDirection
 one-way realization evidence, not context equivalence. -/
 inductive RealizationStatus
   | realizationOnly
+  deriving DecidableEq, Repr
+
+/-- Strength of a context-adequacy record. Only `equivalence` exists: both directions
+are theorems of the bridge. -/
+inductive AdequacyStatus
+  | equivalence
+  deriving DecidableEq, Repr
+
+/-- The ω-model presentation a context-adequacy record is about. Only
+`canonicalOmegaStructure` exists: `OmegaPart.toFoundation` — number sort standard ℕ
+under the explicitly supplied interpretation, set sort exactly `Ω.sets`. -/
+inductive OmegaPresentationTag
+  | canonicalOmegaStructure
   deriving DecidableEq, Repr
 
 /-- Status of a statement adapter. Only `unconditional` exists: every exported adapter
@@ -124,6 +146,16 @@ structure ContextRealizationCertificate (theory : Set (SecondOrder.Sentence ℒ�
   direction : RealizationDirection
   status : RealizationStatus
   realizes : ∀ Ω : OmegaPart, IsTuringIdeal Ω → Ω.toFoundation ⊧* theory
+
+/-- **Context adequacy**: the canonical ω-structures satisfying the theory are exactly
+the Turing ideals. The record **contains** the forward-realization record (so it cannot
+exist without one for the same theory) and adds the converse; the status and
+presentation tags pin the reading in the data. -/
+structure ContextAdequacyCertificate (theory : Set (SecondOrder.Sentence ℒₒᵣ)) where
+  status : AdequacyStatus
+  presentation : OmegaPresentationTag
+  realization : ContextRealizationCertificate theory
+  converse : ∀ Ω : OmegaPart, Ω.toFoundation ⊧* theory → IsTuringIdeal Ω
 
 /-- **Exact statement adapter**: one closed sentence tied to one frozen capability,
 for an arbitrary second-order part. -/
@@ -212,6 +244,14 @@ def rca0RealizationExport : ContextRealizationCertificate Rca0Theory where
   direction := .forward
   status := .realizationOnly
   realizes := fun _ h => ⟨fun _ hσ => forward_adequacy h hσ⟩
+
+/-- Export 1′ — context adequacy: the forward record plus the converse
+`isTuringIdeal_of_models_rca0`; together `models_rca0_iff_isTuringIdeal`. -/
+def rca0AdequacyExport : ContextAdequacyCertificate Rca0Theory where
+  status := .equivalence
+  presentation := .canonicalOmegaStructure
+  realization := rca0RealizationExport
+  converse := fun _ h => isTuringIdeal_of_models_rca0 h
 
 /-- Export 2a — the exact ŴKL statement adapter: `models_wklSentence_iff`. -/
 def wklAdapterExport : StatementAdapterCertificate wklSentence WeakKonigAt where

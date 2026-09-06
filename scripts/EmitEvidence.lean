@@ -40,6 +40,12 @@ def directionTag : RealizationDirection → String
 def realizationStatusTag : RealizationStatus → String
   | .realizationOnly => "realizationOnly"
 
+def adequacyStatusTag : AdequacyStatus → String
+  | .equivalence => "equivalence"
+
+def presentationTag : OmegaPresentationTag → String
+  | .canonicalOmegaStructure => "canonicalOmegaStructure"
+
 def adapterStatusTag : AdapterStatus → String
   | .unconditional => "unconditional"
 
@@ -134,6 +140,18 @@ open EmitEvidence in
        ("context", "ReverseMathlib.Omega.IsTuringIdeal"),
        ("direction", directionTag rca0RealizationExport.direction),
        ("realizationStatus", realizationStatusTag rca0RealizationExport.status)],
+    Json.mkObj
+      [("kind", "contextAdequacy"), ("id", "adequacy.rca0.turingIdeal.canonicalOmega"),
+       ("status", "backendChecked"),
+       ("export", "RMFoundationBridge.rca0AdequacyExport"),
+       ("theorem", "RMFoundationBridge.models_rca0_iff_isTuringIdeal"),
+       ("converseTheorem", "RMFoundationBridge.isTuringIdeal_of_models_rca0"),
+       ("contextRealization", "realization.rca0.turingIdeal"),
+       ("theory", "RMFoundationBridge.Rca0Theory"),
+       ("contextKey", "rca0/turingIdealOmega"),
+       ("context", "ReverseMathlib.Omega.IsTuringIdeal"),
+       ("presentation", presentationTag rca0AdequacyExport.presentation),
+       ("adequacyStatus", adequacyStatusTag rca0AdequacyExport.status)],
     adapterRecord "adapter.wkl.binaryTree.foundationL2"
       "RMFoundationBridge.models_wklSentence_iff"
       "RMFoundationBridge.wklSentence" "ReverseMathlib.Omega.WeakKonigAt"
@@ -215,7 +233,7 @@ open EmitEvidence in
        ("theory", "RMFoundationBridge.Rca0Theory"),
        ("sentence", "RMFoundationBridge.wklSentence")]]
   let out := Json.mkObj
-    [("schema", "rmlib-bridge-evidence/4"),
+    [("schema", "rmlib-bridge-evidence/5"),
      ("fingerprintSchema", "lean-interface-expr/1"),
      ("source", Json.mkObj
        [("repository", "cameronfreer/reverse-mathlib-foundation"),

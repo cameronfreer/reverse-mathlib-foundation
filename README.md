@@ -56,8 +56,8 @@ about formal RCA₀ — without moving a line of either frozen codebase.
 - `forward_adequacy`: every Turing ideal satisfies every axiom of `Rca0Theory` —
   built through an executable Δ⁰₀ evaluator, Tarski agreement, bounded oracle
   recursion, Σ⁰₁ stage / Π⁰₁ costage predicates, and a dovetailed Δ⁰₁ decision.
-  **One-way realization evidence only**: the converse (realizers are ideals) is
-  deliberately absent.
+  **One-way realization evidence** as a record: the converse (realizers are ideals)
+  is a separate, additive record — see *Converse adequacy, Slice D* below.
 - `wklSentence` and `models_wklSentence_iff`: the exact binary-tree ŴKL sentence over
   the frozen `seqCode` coding, with an **unconditional** adapter — for arbitrary `Ω`,
   satisfaction is exactly the frozen `WeakKonigAt Ω`. The coding is arithmetized via
@@ -184,6 +184,24 @@ to reach the expansion theorem, the comprehension axiom, both agreements, the po
 lemma, and `exists_code`, and to reach none of `forward_adequacy`,
 `comprehension_internal`, `IsTuringIdeal`, `charFnTot`. Bridge-local; the bundled
 converse and equivalence are Slice D.
+
+**Converse adequacy, Slice D (bridge half) — the converse and the context
+equivalence.** `ConverseAdequacy.lean` bundles the three recovered clauses:
+`isTuringIdeal_of_models_rca0` (every canonical ω-structure satisfying `Rca0Theory` is a
+Turing ideal; audit-gated to reach all three clause theorems and none of
+`forward_adequacy`, `comprehension_internal`, `charFnTot`) and
+`models_rca0_iff_isTuringIdeal` (with `forward_adequacy`: the canonical ω-structures
+satisfying the named theory are **exactly** the Turing ideals). The export surface gains
+the additive typed record `ContextAdequacyCertificate` / `rca0AdequacyExport` (status
+`equivalence`, presentation `canonicalOmegaStructure`), which *contains* the unchanged
+forward-realization record and adds the converse; the evidence artifact moves to schema
+`/5` with one new `contextAdequacy` record (`docs/evidence-schema.md`). What it licenses:
+every registered all-ideal theorem holds over every canonical ω-model of this exact
+theory. What it does not: identifying `Rca0Theory` with conventional RCA₀ (axiomatization
+faithfulness stays a separate, unverified obligation), Henkin or nonstandard transport,
+any derivability claim, or reinterpreting the calculus-relative nonderivability. The
+consumer side (ingestion of `/5`, rejection of `/4`, fixtures, scoped prose truth-up) is
+the other half of Slice D, in reverse-mathlib.
 
 **F2 — exact EFILC and one-sided Hall adapters, and ideal-level transfers.**
 

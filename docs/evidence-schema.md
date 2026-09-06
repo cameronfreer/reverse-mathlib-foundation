@@ -1,4 +1,4 @@
-# Backend-evidence interchange: `rmlib-bridge-evidence/4`
+# Backend-evidence interchange: `rmlib-bridge-evidence/5`
 
 The versioned canonical JSON contract by which reverse-mathlib ingests this bridge's
 export surface as **backend evidence** — its own evidence family, stored apart from
@@ -10,7 +10,7 @@ importer lands.
 ## Envelope
 
 ```json
-{ "schema": "rmlib-bridge-evidence/4",
+{ "schema": "rmlib-bridge-evidence/5",
   "fingerprintSchema": "lean-interface-expr/1",
   "source": {
     "repository": "cameronfreer/reverse-mathlib-foundation",
@@ -50,15 +50,17 @@ they are not recoverable from the typed records alone.
 
 ## Record kinds
 
-Seven kinds, one record per typed export. (Schema `/1` had four kinds and treated the
+Eight kinds, one record per typed export. (Schema `/1` had four kinds and treated the
 semantic countermodels as deliberately not records; `/2` added `semanticCountermodel`;
 `/3` added `standardCalculusIdentity` and `calculusComparison` and flipped the Henkin
-calculus's `standardComparison` from `pending` to `recorded`; `/4` adds logical
+calculus's `standardComparison` from `pending` to `recorded`; `/4` added logical
 equality to the pinned standard calculus (the `equalityRules` field — reflexivity and
 substitution, sound against equality-correct structures, an explicit soundness
-hypothesis). `/1`–`/3` are intentionally retired — the sole consumer pins exact
-artifact revisions, and no older artifact remains referenced (`/3` was never consumed
-by a merged importer).)
+hypothesis); `/5` adds the **additive** `contextAdequacy` kind — the
+`contextRealization` record and its one-way meaning are unchanged and are never
+reinterpreted. `/1`–`/4` are intentionally retired — the sole consumer pins exact
+artifact revisions, rejects every other version, and no older artifact remains
+referenced.)
 Every record carries `"status": "backendChecked"` as emitted; the importer
 may downgrade (see *Trust*).
 
@@ -71,6 +73,17 @@ may downgrade (see *Trust*).
   "contextKey": "rca0/turingIdealOmega",
   "context": "ReverseMathlib.Omega.IsTuringIdeal",
   "direction": "forward", "realizationStatus": "realizationOnly" }
+
+{ "kind": "contextAdequacy", "id": "adequacy.rca0.turingIdeal.canonicalOmega",
+  "status": "backendChecked",
+  "export": "RMFoundationBridge.rca0AdequacyExport",
+  "theorem": "RMFoundationBridge.models_rca0_iff_isTuringIdeal",
+  "converseTheorem": "RMFoundationBridge.isTuringIdeal_of_models_rca0",
+  "contextRealization": "realization.rca0.turingIdeal",
+  "theory": "RMFoundationBridge.Rca0Theory",
+  "contextKey": "rca0/turingIdealOmega",
+  "context": "ReverseMathlib.Omega.IsTuringIdeal",
+  "presentation": "canonicalOmegaStructure", "adequacyStatus": "equivalence" }
 
 { "kind": "statementAdapter", "id": "adapter.wkl.binaryTree.foundationL2",
   "status": "backendChecked",
@@ -261,6 +274,9 @@ before ingestion is wired):
   graph with typed node and edge meanings is designed.
 - A `realizationOnly` record licenses per-ideal ω-model readings only; renderers must
   never present positive ω-facts as unrestricted semantic RCA₀ claims.
+- A `contextAdequacy` record renders with its presentation and status tags and the
+  exact theory name, and must state that the identification of that theory with
+  conventional RCA₀ is not part of the record.
 - Each nonderivability record renders solely with its calculus qualifier:
   `Rca0Theory ⊬ wklSentence in henkinSafeV1` and
   `Rca0Theory ⊬ wklSentence in l2VarWitnessLK.v1 — backend checked`, generated from
@@ -271,6 +287,40 @@ before ingestion is wired):
   typed qualifier is the calculus identifier); the `henkinSafeV1` record stays a
   backend record only.
 
+
+### `contextAdequacy`
+
+The context equivalence on canonical ω-structures: the structures `Ω.toFoundation`
+satisfying the theory are exactly the Turing ideals. One record:
+`adequacy.rca0.turingIdeal.canonicalOmega`.
+
+- `export`, `theorem`, `converseTheorem` — the typed export record (which **contains**
+  the forward-realization certificate as a field, so the Lean-side record cannot exist
+  without one), the equivalence theorem, and the converse theorem.
+- `contextRealization` — typed reference to the forward record, **identity-checked**:
+  the referenced record must exist, be of kind `contextRealization`, and name exactly
+  this record's `theory`, `contextKey`, and `context`. If the referenced forward record
+  is `reported` or downgraded, the adequacy record is downgraded with it; a reference to
+  a mismatched or missing forward record is a hard error. Equivalence-shaped data
+  masquerading as `contextRealization` (a `direction` other than `forward`, a
+  `realizationStatus` other than `realizationOnly`) stays a hard error.
+- `theory`, `contextKey`, `context` — the exact bridge theory, the crosswalk key, and
+  the semantic anchor, verified by exact declaration identity as for
+  `contextRealization`; the fingerprint roots are the context predicate.
+- `presentation` — closed tag, `canonicalOmegaStructure`: `OmegaPart.toFoundation`
+  (number sort standard ℕ under the explicitly supplied interpretation, set sort exactly
+  `Ω.sets`). The equivalence is about this presentation and no other.
+- `adequacyStatus` — closed tag, `equivalence`.
+
+**What the record licenses.** Every registered theorem over all Turing ideals holds
+over every canonical ω-model of *this exact theory*. **What it does not license**:
+identifying the theory unqualifiedly with conventional RCA₀ (axiomatization
+faithfulness is a separate obligation); transport to arbitrary Henkin or nonstandard
+models; any object-calculus derivability; reinterpreting the calculus-relative
+nonderivability records as conventional-RCA₀ nonderivability; or turning a typed
+ω-capability into an L₂ theorem without its own statement adapter. It contributes to
+no scoreboard column: it upgrades the formal status of the ω-context and is not a
+calibration fact.
 
 ### `semanticCountermodel`
 
