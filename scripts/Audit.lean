@@ -124,6 +124,20 @@ def gates : List Gate :=
        ``RMFoundationBridge.out_one_iff_not_out_zero,
        ``ReverseMathlib.Omega.OracleCode.exists_code]
      forbidden := forwardRoute ++ transcriptForbidden },
+   { headline := ``RMFoundationBridge.isTuringIdeal_of_models_rca0
+     required := [``RMFoundationBridge.nonempty_of_models_rca0,
+       ``RMFoundationBridge.joinSet_mem_of_models_rca0,
+       ``RMFoundationBridge.mem_of_reducible_of_models_rca0]
+     forbidden := [``RMFoundationBridge.forward_adequacy,
+       ``RMFoundationBridge.comprehension_internal, `ReverseMathlib.Omega.charFnTot] },
+   { headline := ``RMFoundationBridge.models_rca0_iff_isTuringIdeal
+     required := [``RMFoundationBridge.isTuringIdeal_of_models_rca0,
+       ``RMFoundationBridge.forward_adequacy] },
+   { headline := ``RMFoundationBridge.rca0AdequacyExport
+     required := [``RMFoundationBridge.isTuringIdeal_of_models_rca0,
+       ``RMFoundationBridge.rca0RealizationExport,
+       ``RMFoundationBridge.forward_adequacy]
+     forbidden := derivedOnly },
    { headline := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
      required := [``RMFoundationBridge.forward_adequacy,
        ``RMFoundationBridge.models_wklSentence_iff,
