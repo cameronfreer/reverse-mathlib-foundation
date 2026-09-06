@@ -167,6 +167,24 @@ Every inner witness carries an explicit bound. Toolkit additions: numerals (`tNu
 arbitrary-arity substitution (`Delta0Code.app` / `evalN_rew_subst`). The reduced set `A`
 does not occur.
 
+**Converse adequacy, Slice C3 — the Σ⁰₁ output predicate and downward closure.**
+`ConverseDownward.lean` exposes the **general** Σ⁰₁ output predicate `outputMatrix` (one
+oracle-set slot, three explicit number slots `(n, e, v)`; one `∃¹` over a
+`Delta0Code 1 4`) with standard-ℕ agreement `evalN_outputMatrix`:
+`v ∈ OracleCode.eval (charFn B) (ofNatCode e) n` — a metatheoretic statement about
+standard ℕ, never a claim that an object theory proves it, nor totality or determinism
+of the coded function. The polarity pair specializes it: `Out₁` at `v = 1` (Σ⁰₁), `Out₀`
+at `v = 0` (Σ⁰₁ by substitution), and the Π⁰₁ definition `∼Out₀`. Their agreement at a
+reducing code, `out_one_iff_not_out_zero`, visibly uses **determinism** (`Part.mem_unique`)
+one way and **totality** (`charFn_dom`) the other. `mem_of_reducible_of_models_rca0`
+then closes the last ideal clause: comprehension on the pair at set assignment `![B]`
+and number parameters `(encodeCode c, 1)` recovers exactly `A`; the reduced set occurs
+only in that metatheoretic argument through `eval (charFn B) c = charFn A`. Audit-gated
+to reach the expansion theorem, the comprehension axiom, both agreements, the polarity
+lemma, and `exists_code`, and to reach none of `forward_adequacy`,
+`comprehension_internal`, `IsTuringIdeal`, `charFnTot`. Bridge-local; the bundled
+converse and equivalence are Slice D.
+
 **F2 — exact EFILC and one-sided Hall adapters, and ideal-level transfers.**
 
 - `efilcSentence` / `models_efilcSentence_iff` and `hallSentence` /

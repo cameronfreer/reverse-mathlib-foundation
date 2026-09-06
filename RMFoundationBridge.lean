@@ -20,6 +20,7 @@ import RMFoundationBridge.SeqArith
 import RMFoundationBridge.BoundedSeqArith
 import RMFoundationBridge.OracleTranscript
 import RMFoundationBridge.OracleTranscriptCode
+import RMFoundationBridge.ConverseDownward
 import RMFoundationBridge.TreePredicates
 import RMFoundationBridge.WklSentence
 import RMFoundationBridge.WklRegression

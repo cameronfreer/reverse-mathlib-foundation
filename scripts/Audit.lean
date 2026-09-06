@@ -106,6 +106,24 @@ def gates : List Gate :=
    { headline := ``RMFoundationBridge.exists_tableOf
      required := [``Nat.beta_unbeta_coe, ``RMFoundationBridge.Entry.ofNat_toNat]
      forbidden := transcriptForbidden },
+   { headline := ``RMFoundationBridge.evalN_outputMatrix
+     required := [``RMFoundationBridge.evalN_verifiedCode,
+       ``RMFoundationBridge.verified_sound, ``RMFoundationBridge.verified_complete,
+       ``RMFoundationBridge.exists_tableOf,
+       ``ReverseMathlib.Omega.OracleCode.evaln_complete,
+       ``RMFoundationBridge.charFn_eq_coe_oracleOf]
+     forbidden := transcriptForbidden },
+   { headline := ``RMFoundationBridge.out_one_iff_not_out_zero
+     required := [``Part.mem_unique, ``ReverseMathlib.Omega.charFn_dom]
+     forbidden := transcriptForbidden },
+   { headline := ``RMFoundationBridge.mem_of_reducible_of_models_rca0
+     required := [``RMFoundationBridge.models_comprehensionInstance_iff,
+       ``RMFoundationBridge.outputComprehension_mem_theory,
+       ``RMFoundationBridge.evalN_outputMatrix,
+       ``RMFoundationBridge.evalN_notOutZeroMatrix,
+       ``RMFoundationBridge.out_one_iff_not_out_zero,
+       ``ReverseMathlib.Omega.OracleCode.exists_code]
+     forbidden := forwardRoute ++ transcriptForbidden },
    { headline := ``RMFoundationBridge.rca0_not_semantically_implies_wkl
      required := [``RMFoundationBridge.forward_adequacy,
        ``RMFoundationBridge.models_wklSentence_iff,
